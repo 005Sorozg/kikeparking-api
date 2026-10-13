@@ -17,4 +17,16 @@ export const AppErrors = {
     message: "El valor de sort debe ser 'rating' o 'price'",
     statusCode: 400,
   },
+
+  PARKING_INVALID_ID: {
+    code: "PARKING_INVALID_ID",
+    message: "El id del parqueadero debe ser un número entero positivo",
+    statusCode: 400,
+  },
+
+  PARKING_NOT_FOUND: {
+    code: "PARKING_NOT_FOUND",
+    message: "Parqueadero no encontrado",
+    statusCode: 404,
+  },
 };

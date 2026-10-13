@@ -12,4 +12,5 @@ export interface ParkingSpotsFilters {
 
 export interface IParkingSpotsService {
   getParkingSpots(filters?: ParkingSpotsFilters): Promise<ParkingSpotResponseDTO[]>;
+  getParkingSpotById(id: number): Promise<ParkingSpotResponseDTO>;
 }

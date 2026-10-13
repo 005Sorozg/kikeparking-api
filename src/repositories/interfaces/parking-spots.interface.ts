@@ -3,4 +3,5 @@ import { ParkingSpotsFilters } from "../../services/interfaces/parking-spots.int
 
 export interface IParkingSpotsRepository {
   getParkingSpotsByFilters(filters?: ParkingSpotsFilters): Promise<ParkingSpot[]>;
+  getParkingSpotById(id: number): Promise<ParkingSpot | undefined>;
 }

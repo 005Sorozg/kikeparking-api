@@ -33,4 +33,8 @@ export class ParkingSpotsRepository implements IParkingSpotsRepository {
 
     return spots;
   }
+
+  async getParkingSpotById(id: number): Promise<ParkingSpot | undefined> {
+    return parkingSpotData.find((spot) => spot.id === id);
+  }
 }

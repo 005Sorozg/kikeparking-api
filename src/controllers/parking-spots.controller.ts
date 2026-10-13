@@ -19,4 +19,13 @@ export class ParkingSpotsController {
 
     res.status(200).json(result);
   };
+
+  getParkingSpotById = async (req: Request, res: Response): Promise<void> => {
+    // El id llega como texto desde la URL, así que se convierte a número
+    const id = Number(req.params.id);
+
+    const result = await this.parkingSpotsService.getParkingSpotById(id);
+
+    res.status(200).json(result);
+  };
 }
