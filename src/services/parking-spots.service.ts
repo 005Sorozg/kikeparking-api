@@ -1,3 +1,4 @@
+import { ParkingSpot } from "../data/models/parking-spot.model";
 import { ParkingSpotResponseDTO } from "../dto/parking-spots.dto";
 import { AppException } from "../exceptions/app.exception";
 import { AppErrors } from "../exceptions/errors/app.error";
@@ -21,7 +22,31 @@ export class ParkingSpotsService implements IParkingSpotsService {
 
     const spots = await this.parkingSpotsRepository.getParkingSpotsByFilters(filters);
 
-    return spots.map((spot) => ({
+    return spots.map((spot) => this.toResponseDTO(spot));
+  }
+
+  async getParkingSpotById(id: number): Promise<ParkingSpotResponseDTO> {
+    // Si en la URL no llega un número entero positivo, id será NaN o inválido
+    if (!Number.isInteger(id) || id <= 0) {
+      const error = AppErrors.PARKING_INVALID_ID;
+
+      throw new AppException(error.code, error.message, error.statusCode);
+    }
+
+    const spot = await this.parkingSpotsRepository.getParkingSpotById(id);
+
+    if (!spot) {
+      const error = AppErrors.PARKING_NOT_FOUND;
+
+      throw new AppException(error.code, error.message, error.statusCode);
+    }
+
+    return this.toResponseDTO(spot);
+  }
+
+  // Convierte el modelo interno al formato que se devuelve al cliente
+  private toResponseDTO(spot: ParkingSpot): ParkingSpotResponseDTO {
+    return {
       id: spot.id,
       title: spot.title,
       neighborhood: spot.neighborhood,
@@ -29,6 +54,6 @@ export class ParkingSpotsService implements IParkingSpotsService {
       pricePerHour: spot.pricePerHour,
       available: spot.available,
       rating: spot.rating,
-    }));
+    };
   }
 }
