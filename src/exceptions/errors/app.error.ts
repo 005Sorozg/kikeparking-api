@@ -2,13 +2,19 @@
 export const AppErrors = {
   ROUTE_NOT_FOUND: {
     code: "ROUTE_NOT_FOUND",
-    message: "Route not found",
+    message: "Ruta no encontrada",
     statusCode: 404,
   },
 
   INTERNAL_SERVER_ERROR: {
     code: "INTERNAL_SERVER_ERROR",
-    message: "Internal server error",
+    message: "Error interno del servidor",
     statusCode: 500,
+  },
+
+  PARKING_INVALID_SORT: {
+    code: "PARKING_INVALID_SORT",
+    message: "El valor de sort debe ser 'rating' o 'price'",
+    statusCode: 400,
   },
 };

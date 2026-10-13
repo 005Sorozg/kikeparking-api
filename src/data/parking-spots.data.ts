@@ -4,7 +4,7 @@ import { ParkingSpot } from "./models/parking-spot.model";
 export const parkingSpotData: ParkingSpot[] = [
   {
     id: 1,
-    title: "Covered garage with security",
+    title: "Garaje techado con vigilancia",
     neighborhood: "Laureles",
     address: "Cra. 76 #44-20",
     pricePerHour: 3000,
@@ -13,7 +13,7 @@ export const parkingSpotData: ParkingSpot[] = [
   },
   {
     id: 2,
-    title: "Gated community spot",
+    title: "Celda en unidad cerrada",
     neighborhood: "El Poblado",
     address: "Cl. 9 #37-15",
     pricePerHour: 3500,
@@ -22,7 +22,7 @@ export const parkingSpotData: ParkingSpot[] = [
   },
   {
     id: 3,
-    title: "Open-air parking lot",
+    title: "Parqueadero descubierto",
     neighborhood: "Belén",
     address: "Cra. 70 #30-08",
     pricePerHour: 2500,
@@ -31,7 +31,7 @@ export const parkingSpotData: ParkingSpot[] = [
   },
   {
     id: 4,
-    title: "Family garage",
+    title: "Garaje familiar",
     neighborhood: "Envigado",
     address: "Cl. 38 Sur #43-12",
     pricePerHour: 2800,

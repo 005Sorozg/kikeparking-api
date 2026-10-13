@@ -1,7 +1,8 @@
 import { Router } from "express";
+import parkingSpotsRoutes from "./parking-spots.route";
 
 const router = Router();
 
-// Aquí se montan las rutas de la versión 1, una por recurso
+router.use("/parking-spots", parkingSpotsRoutes);
 
 export default router;
