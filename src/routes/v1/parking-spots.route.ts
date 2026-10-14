@@ -16,4 +16,10 @@ router.get("/:id", async (req, res) => {
   return controller.getParkingSpotById(req, res);
 });
 
+router.post("/", async (req, res) => {
+  const controller = container.resolve<ParkingSpotsController>("parkingSpotsController");
+
+  return controller.createParkingSpot(req, res);
+});
+
 export default router;
