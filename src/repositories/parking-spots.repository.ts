@@ -37,4 +37,14 @@ export class ParkingSpotsRepository implements IParkingSpotsRepository {
   async getParkingSpotById(id: number): Promise<ParkingSpot | undefined> {
     return parkingSpotData.find((spot) => spot.id === id);
   }
+
+  async createParkingSpot(data: Omit<ParkingSpot, "id">): Promise<ParkingSpot> {
+    // El nuevo id es el mayor existente más uno (con la base de datos lo asignará ella)
+    const nextId = parkingSpotData.length ? Math.max(...parkingSpotData.map((spot) => spot.id)) + 1 : 1;
+
+    const spot: ParkingSpot = { id: nextId, ...data };
+    parkingSpotData.push(spot);
+
+    return spot;
+  }
 }

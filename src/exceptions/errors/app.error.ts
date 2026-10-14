@@ -29,4 +29,10 @@ export const AppErrors = {
     message: "Parqueadero no encontrado",
     statusCode: 404,
   },
+
+  PARKING_INVALID_DATA: {
+    code: "PARKING_INVALID_DATA",
+    message: "Los datos del parqueadero no son válidos",
+    statusCode: 400,
+  },
 };
