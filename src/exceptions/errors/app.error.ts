@@ -35,4 +35,22 @@ export const AppErrors = {
     message: "Los datos del parqueadero no son válidos",
     statusCode: 400,
   },
+
+  USER_EMAIL_IN_USE: {
+    code: "USER_EMAIL_IN_USE",
+    message: "Ya existe una cuenta con ese correo",
+    statusCode: 409,
+  },
+
+  USER_INVALID_DATA: {
+    code: "USER_INVALID_DATA",
+    message: "Los datos del usuario no son válidos",
+    statusCode: 400,
+  },
+
+  USER_INVALID_CREDENTIALS: {
+    code: "USER_INVALID_CREDENTIALS",
+    message: "Correo o contraseña incorrectos",
+    statusCode: 401,
+  }
 };

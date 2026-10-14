@@ -11,4 +11,5 @@ export const env = {
   port: process.env.PORT ? Number(process.env.PORT) : 3000,
   logLevel: process.env.LOG_LEVEL || "info",
   apiPrefix: process.env.API_PREFIX || "/kikeparking-api",
+  jwtSecret: process.env.JWT_SECRET || "dev-secret"
 };
