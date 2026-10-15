@@ -1,21 +1,19 @@
 import { User } from "../data/models/user.model";
-import { userData } from "../data/users.data";
+import { prisma } from "../config/prisma";
 import { IUsersRepository } from "./interfaces/users.interface";
 
 export class UsersRepository implements IUsersRepository {
   async getUserByEmail(email: string): Promise<User | undefined> {
-    // Se compara en minúsculas para que "Ana@mail.com" y "ana@mail.com" sean el mismo usuario
-    const text = email.toLowerCase();
+    const user = await prisma.user.findFirst({
+      where: { email: { equals: email, mode: "insensitive" } },
+    });
 
-    return userData.find((user) => user.email.toLowerCase() === text);
+    return (user as User) ?? undefined;
   }
 
   async createUser(data: Omit<User, "id">): Promise<User> {
-    const nextId = userData.length ? Math.max(...userData.map((user) => user.id)) + 1 : 1;
+    const user = await prisma.user.create({ data });
 
-    const user: User = { id: nextId, ...data };
-    userData.push(user);
-
-    return user;
+    return user as User;
   }
 }

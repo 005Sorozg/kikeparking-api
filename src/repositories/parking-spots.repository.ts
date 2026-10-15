@@ -1,50 +1,37 @@
 import { ParkingSpot } from "../data/models/parking-spot.model";
-import { parkingSpotData } from "../data/parking-spots.data";
+import { prisma } from "../config/prisma";
 import { ParkingSpotsFilters } from "../services/interfaces/parking-spots.interface";
 import { IParkingSpotsRepository } from "./interfaces/parking-spots.interface";
 
 export class ParkingSpotsRepository implements IParkingSpotsRepository {
   async getParkingSpotsByFilters(filters?: ParkingSpotsFilters): Promise<ParkingSpot[]> {
-    let spots = parkingSpotData;
-
-    // El texto se busca en el barrio y en el título, sin distinguir mayúsculas
-    if (filters?.search) {
-      const text = filters.search.toLowerCase();
-
-      spots = spots.filter(
-        (spot) =>
-          spot.neighborhood.toLowerCase().includes(text) ||
-          spot.title.toLowerCase().includes(text),
-      );
-    }
-
-    if (filters?.onlyAvailable) {
-      spots = spots.filter((spot) => spot.available);
-    }
-
-    // Se copia el arreglo antes de ordenar para no modificar los datos originales
-    if (filters?.sort === "rating") {
-      spots = [...spots].sort((a, b) => b.rating - a.rating);
-    }
-
-    if (filters?.sort === "price") {
-      spots = [...spots].sort((a, b) => a.pricePerHour - b.pricePerHour);
-    }
-
-    return spots;
+    return prisma.parkingSpot.findMany({
+      where: {
+        // El texto se busca en el barrio o en el título, sin distinguir mayúsculas
+        ...(filters?.search && {
+          OR: [
+            { title: { contains: filters.search, mode: "insensitive" } },
+            { neighborhood: { contains: filters.search, mode: "insensitive" } },
+          ],
+        }),
+        ...(filters?.onlyAvailable && { available: true }),
+      },
+      orderBy:
+        filters?.sort === "rating"
+          ? { rating: "desc" }
+          : filters?.sort === "price"
+            ? { pricePerHour: "asc" }
+            : undefined,
+    });
   }
 
   async getParkingSpotById(id: number): Promise<ParkingSpot | undefined> {
-    return parkingSpotData.find((spot) => spot.id === id);
+    const spot = await prisma.parkingSpot.findUnique({ where: { id } });
+
+    return spot ?? undefined;
   }
 
   async createParkingSpot(data: Omit<ParkingSpot, "id">): Promise<ParkingSpot> {
-    // El nuevo id es el mayor existente más uno (con la base de datos lo asignará ella)
-    const nextId = parkingSpotData.length ? Math.max(...parkingSpotData.map((spot) => spot.id)) + 1 : 1;
-
-    const spot: ParkingSpot = { id: nextId, ...data };
-    parkingSpotData.push(spot);
-
-    return spot;
+    return prisma.parkingSpot.create({ data });
   }
 }
