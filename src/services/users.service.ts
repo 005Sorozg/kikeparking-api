@@ -73,6 +73,12 @@ export class UsersService implements IUsersService {
     };
   }
 
+    async getAllUsers(): Promise<UserResponseDTO[]> {
+    const users = await this.usersRepository.getAllUsers();
+
+    return users.map((user) => this.toResponseDTO(user));
+  }
+
   private validateRegisterData(data: RegisterUserRequestDTO): string[] {
     const problems: string[] = [];
 

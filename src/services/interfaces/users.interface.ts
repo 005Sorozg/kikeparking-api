@@ -3,4 +3,5 @@ import { LoginRequestDTO, LoginResponseDTO, RegisterUserRequestDTO, UserResponse
 export interface IUsersService {
   registerUser(data: RegisterUserRequestDTO): Promise<UserResponseDTO>;
   login(data: LoginRequestDTO): Promise<LoginResponseDTO>;
+  getAllUsers(): Promise<UserResponseDTO[]>;
 }
