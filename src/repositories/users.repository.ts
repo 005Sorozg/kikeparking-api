@@ -16,4 +16,10 @@ export class UsersRepository implements IUsersRepository {
 
     return user as User;
   }
+
+    async getAllUsers(): Promise<User[]> {
+    const users = await prisma.user.findMany({ orderBy: { id: "asc" } });
+
+    return users as User[];
+  }
 }

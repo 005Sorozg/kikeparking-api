@@ -21,4 +21,10 @@ export class UsersController {
 
     res.status(200).json(result);
   };
+
+  getAll = async (req: Request, res: Response): Promise<void> => {
+    const result = await this.usersService.getAllUsers();
+
+    res.status(200).json(result);
+  };
 }

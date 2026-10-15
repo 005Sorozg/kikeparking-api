@@ -16,4 +16,10 @@ router.post("/login", async (req, res) => {
   return controller.login(req, res);
 });
 
+router.get("/", async (req, res) => {
+  const controller = container.resolve<UsersController>("usersController");
+
+  return controller.getAll(req, res);
+});
+
 export default router;
