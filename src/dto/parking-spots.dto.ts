@@ -6,6 +6,7 @@ export interface ParkingSpotResponseDTO {
   pricePerHour: number;
   available: boolean;
   rating: number;
+  ownerId: number;
 }
 
 // Datos que el cliente envía para crear un parqueadero

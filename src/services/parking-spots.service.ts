@@ -44,7 +44,7 @@ export class ParkingSpotsService implements IParkingSpotsService {
     return this.toResponseDTO(spot);
   }
 
-  async createParkingSpot(data: CreateParkingSpotRequestDTO): Promise<ParkingSpotResponseDTO> {
+  async createParkingSpot(data: CreateParkingSpotRequestDTO, ownerId: number): Promise<ParkingSpotResponseDTO> {
     const problems = this.validateCreateData(data);
 
     if (problems.length > 0) {
@@ -52,6 +52,7 @@ export class ParkingSpotsService implements IParkingSpotsService {
 
       throw new AppException(error.code, `${error.message}: ${problems.join(", ")}`, error.statusCode);
     }
+
 
     // Todo parqueadero nuevo nace disponible y sin calificación
     const spot = await this.parkingSpotsRepository.createParkingSpot({
@@ -61,9 +62,16 @@ export class ParkingSpotsService implements IParkingSpotsService {
       pricePerHour: data.pricePerHour,
       available: true,
       rating: 0,
+      ownerId: ownerId,
     });
 
     return this.toResponseDTO(spot);
+  }
+
+  async getMyParkingSpots(ownerId: number): Promise<ParkingSpotResponseDTO[]> {
+    const spots = await this.parkingSpotsRepository.getParkingSpotsByOwner(ownerId);
+
+    return spots.map((spot) => this.toResponseDTO(spot));
   }
 
   // El cuerpo llega del cliente, así que se valida el tipo y el valor de cada campo
@@ -99,6 +107,7 @@ export class ParkingSpotsService implements IParkingSpotsService {
       pricePerHour: spot.pricePerHour,
       available: spot.available,
       rating: spot.rating,
+      ownerId: spot.ownerId,
     };
   }
 }

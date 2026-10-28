@@ -6,4 +6,5 @@ export interface ParkingSpot {
   pricePerHour: number;
   available: boolean;
   rating: number;
+  ownerId: number;
 }

@@ -1,0 +1,14 @@
+model ParkingSpot {
+  id           Int      @id @default(autoincrement())
+  title        String
+  neighborhood String
+  address      String
+  pricePerHour Int
+  available    Boolean  @default(true)
+  rating       Float    @default(0)
+  createdAt    DateTime @default(now())
+  ownerId      Int
+  owner        User    @relation(fields: [ownerId], references: [id])
+
+  @@map("parking_spots")
+}
