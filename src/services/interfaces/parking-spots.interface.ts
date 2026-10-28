@@ -13,5 +13,6 @@ export interface ParkingSpotsFilters {
 export interface IParkingSpotsService {
   getParkingSpots(filters?: ParkingSpotsFilters): Promise<ParkingSpotResponseDTO[]>;
   getParkingSpotById(id: number): Promise<ParkingSpotResponseDTO>;
-  createParkingSpot(data: CreateParkingSpotRequestDTO): Promise<ParkingSpotResponseDTO>;
+  createParkingSpot(data: CreateParkingSpotRequestDTO, ownerId: number): Promise<ParkingSpotResponseDTO>;
+  getMyParkingSpots(ownerId: number): Promise<ParkingSpotResponseDTO[]>;
 }

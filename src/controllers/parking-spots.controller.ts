@@ -30,13 +30,20 @@ export class ParkingSpotsController {
     res.status(200).json(result);
   };
 
-  createParkingSpot = async (req: Request, res: Response): Promise<void> => {
+    createParkingSpot = async (req: Request, res: Response): Promise<void> => {
     // El servicio valida el cuerpo, porque el cliente puede mandar cualquier cosa
     const body = req.body as CreateParkingSpotRequestDTO;
 
-    const result = await this.parkingSpotsService.createParkingSpot(body);
+    // req.user lo deja el middleware requireAuth, que corre antes que este método
+    const result = await this.parkingSpotsService.createParkingSpot(body, req.user!.id);
 
     // 201 significa "creado", a diferencia del 200 de las consultas
     res.status(201).json(result);
+  };
+
+  getMyParkingSpots = async (req: Request, res: Response): Promise<void> => {
+    const result = await this.parkingSpotsService.getMyParkingSpots(req.user!.id);
+
+    res.status(200).json(result);
   };
 }

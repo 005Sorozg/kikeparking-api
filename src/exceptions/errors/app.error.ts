@@ -52,5 +52,17 @@ export const AppErrors = {
     code: "USER_INVALID_CREDENTIALS",
     message: "Correo o contraseña incorrectos",
     statusCode: 401,
+  },
+
+  AUTH_TOKEN_MISSING: {
+    code: "AUTH_TOKEN_MISSING",
+    message: "Debes iniciar sesión para realizar esta acción",
+    statusCode: 401,
+  },
+
+  AUTH_TOKEN_INVALID: {
+    code: "AUTH_TOKEN_INVALID",
+    message: "La sesión no es válida o expiró",
+    statusCode: 401,
   }
 };
