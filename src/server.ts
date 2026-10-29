@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import { scopePerRequest } from "awilix-express";
 import { container } from "./config/container";
 import { env } from "./config/env";
@@ -10,6 +11,7 @@ import { AppErrors } from "./exceptions/errors/app.error";
 export const createServer = () => {
   const app = express();
 
+  app.use(cors());
   app.use(express.json());
   app.use(scopePerRequest(container));
 
