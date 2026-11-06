@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { container } from "../../config/container";
 import { ParkingSpotsController } from "../../controllers/parking-spots.controller";
-import { requireAuth } from "../../middlewares/auth.middleware";
+import { requireAuth, requireRole  } from "../../middlewares/auth.middleware";
 
 const router = Router();
 
@@ -27,6 +27,13 @@ router.post("/", requireAuth, async (req, res) => {
   const controller = container.resolve<ParkingSpotsController>("parkingSpotsController");
 
   return controller.createParkingSpot(req, res);
+});
+
+// Pausar o reactivar un parqueadero (solo su dueño, lo revisa el servicio)
+router.patch("/:id/availability", requireAuth, requireRole("propietario"), async (req, res) => {
+  const controller = container.resolve<ParkingSpotsController>("parkingSpotsController");
+
+  return controller.updateAvailability(req, res);
 });
 
 export default router;

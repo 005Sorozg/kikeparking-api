@@ -30,6 +30,12 @@ export const AppErrors = {
     statusCode: 404,
   },
 
+  PARKING_NOT_OWNED: {
+    code: "PARKING_NOT_OWNED",
+    message: "Este parqueadero no es tuyo",
+    statusCode: 403,
+  },
+
   PARKING_INVALID_DATA: {
     code: "PARKING_INVALID_DATA",
     message: "Los datos del parqueadero no son válidos",
@@ -64,5 +70,65 @@ export const AppErrors = {
     code: "AUTH_TOKEN_INVALID",
     message: "La sesión no es válida o expiró",
     statusCode: 401,
-  }
+  },
+
+  AUTH_FORBIDDEN_ROLE: {
+    code: "AUTH_FORBIDDEN_ROLE",
+    message: "Tu tipo de cuenta no tiene permiso para realizar esta acción",
+    statusCode: 403,
+  },
+
+  BOOKING_INVALID_DATA: {
+    code: "BOOKING_INVALID_DATA",
+    message: "Los datos de la reserva no son válidos",
+    statusCode: 400,
+  },
+
+  BOOKING_INVALID_ID: {
+    code: "BOOKING_INVALID_ID",
+    message: "El id de la reserva debe ser un número entero positivo",
+    statusCode: 400,
+  },
+
+  BOOKING_NOT_FOUND: {
+    code: "BOOKING_NOT_FOUND",
+    message: "Reserva no encontrada",
+    statusCode: 404,
+  },
+
+  BOOKING_SPOT_UNAVAILABLE: {
+    code: "BOOKING_SPOT_UNAVAILABLE",
+    message: "Este parqueadero no está recibiendo reservas en este momento",
+    statusCode: 409,
+  },
+
+  BOOKING_OWN_SPOT: {
+    code: "BOOKING_OWN_SPOT",
+    message: "No puedes reservar tu propio parqueadero",
+    statusCode: 403,
+  },
+
+  BOOKING_TIME_TAKEN: {
+    code: "BOOKING_TIME_TAKEN",
+    message: "El parqueadero ya está reservado en ese horario. Prueba con otra fecha u hora",
+    statusCode: 409,
+  },
+
+  BOOKING_FORBIDDEN: {
+    code: "BOOKING_FORBIDDEN",
+    message: "No tienes permiso sobre esta reserva",
+    statusCode: 403,
+  },
+
+  BOOKING_ALREADY_CANCELLED: {
+    code: "BOOKING_ALREADY_CANCELLED",
+    message: "Esta reserva ya estaba cancelada",
+    statusCode: 409,
+  },
+
+  BOOKING_ALREADY_FINISHED: {
+    code: "BOOKING_ALREADY_FINISHED",
+    message: "No se puede cancelar una reserva que ya terminó",
+    statusCode: 409,
+  },
 };

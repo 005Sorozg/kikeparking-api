@@ -6,6 +6,7 @@ model User {
   role         String
   createdAt    DateTime @default(now())
   parkingSpots ParkingSpot[]
+  bookings     Booking[]
 
   @@map("users")
 }

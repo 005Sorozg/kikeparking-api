@@ -1,0 +1,20 @@
+model Booking {
+  id            Int         @id @default(autoincrement())
+  // "carro" o "moto"
+  vehicleType   String
+  startAt       DateTime
+  endAt         DateTime
+  // Precio total en pesos, calculado por el servidor (horas x precio por hora)
+  totalPrice    Int
+  // "confirmed" o "cancelled"
+  status        String      @default("confirmed")
+  createdAt     DateTime    @default(now())
+  parkingSpotId Int
+  parkingSpot   ParkingSpot @relation(fields: [parkingSpotId], references: [id])
+  driverId      Int
+  driver        User        @relation(fields: [driverId], references: [id])
+
+  @@index([parkingSpotId, startAt])
+  @@index([driverId])
+  @@map("bookings")
+}

@@ -38,4 +38,8 @@ export class ParkingSpotsRepository implements IParkingSpotsRepository {
   async getParkingSpotsByOwner(ownerId: number): Promise<ParkingSpot[]> {
     return prisma.parkingSpot.findMany({ where: { ownerId } });
   }
+
+  async updateAvailability(id: number, available: boolean): Promise<ParkingSpot> {
+    return prisma.parkingSpot.update({ where: { id }, data: { available } });
+  }
 }

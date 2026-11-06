@@ -30,3 +30,15 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
     throw new AppException(error.code, error.message, error.statusCode);
   }
 }
+
+// Exige que el usuario tenga uno de los roles indicados. Debe ir después de requireAuth.
+export function requireRole(...roles: string[]) {
+  return (req: Request, _res: Response, next: NextFunction): void => {
+    if (!req.user || !roles.includes(req.user.role)) {
+      const error = AppErrors.AUTH_FORBIDDEN_ROLE;
+      throw new AppException(error.code, error.message, error.statusCode);
+    }
+
+    next();
+  };
+}

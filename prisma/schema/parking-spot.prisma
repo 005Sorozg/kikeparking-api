@@ -9,6 +9,7 @@ model ParkingSpot {
   createdAt    DateTime @default(now())
   ownerId      Int
   owner        User    @relation(fields: [ownerId], references: [id])
+  bookings     Booking[]
 
   @@map("parking_spots")
-}
+} 

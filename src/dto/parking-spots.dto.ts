@@ -16,3 +16,8 @@ export interface CreateParkingSpotRequestDTO {
   address: string;
   pricePerHour: number;
 }
+
+// Datos que el propietario envía para pausar o reactivar su parqueadero
+export interface UpdateAvailabilityRequestDTO {
+  available: boolean;
+}
