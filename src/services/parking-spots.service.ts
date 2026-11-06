@@ -1,5 +1,5 @@
 import { ParkingSpot } from "../data/models/parking-spot.model";
-import { CreateParkingSpotRequestDTO, ParkingSpotResponseDTO } from "../dto/parking-spots.dto";
+import { CreateParkingSpotRequestDTO, ParkingSpotResponseDTO, UpdateAvailabilityRequestDTO } from "../dto/parking-spots.dto";
 import { AppException } from "../exceptions/app.exception";
 import { AppErrors } from "../exceptions/errors/app.error";
 import { IParkingSpotsRepository } from "../repositories/interfaces/parking-spots.interface";
@@ -72,6 +72,45 @@ export class ParkingSpotsService implements IParkingSpotsService {
     const spots = await this.parkingSpotsRepository.getParkingSpotsByOwner(ownerId);
 
     return spots.map((spot) => this.toResponseDTO(spot));
+  }
+
+      // Pausar (available: false) o reactivar (available: true) un parqueadero.
+    // Pausado no recibe reservas nuevas; las que ya tenía se mantienen.
+  async updateAvailability(
+    id: number,
+    data: UpdateAvailabilityRequestDTO,
+    ownerId: number,
+  ): Promise<ParkingSpotResponseDTO> {
+    if (!Number.isInteger(id) || id <= 0) {
+      const error = AppErrors.PARKING_INVALID_ID;
+
+      throw new AppException(error.code, error.message, error.statusCode);
+    }
+
+    if (typeof data?.available !== "boolean") {
+      const error = AppErrors.PARKING_INVALID_DATA;
+
+      throw new AppException(error.code, `${error.message}: available debe ser true o false`, error.statusCode);
+    }
+
+    const spot = await this.parkingSpotsRepository.getParkingSpotById(id);
+
+    if (!spot) {
+      const error = AppErrors.PARKING_NOT_FOUND;
+
+      throw new AppException(error.code, error.message, error.statusCode);
+    }
+
+    // Solo el dueño puede pausar o reactivar su parqueadero
+    if (spot.ownerId !== ownerId) {
+      const error = AppErrors.PARKING_NOT_OWNED;
+
+      throw new AppException(error.code, error.message, error.statusCode);
+    }
+
+    const updated = await this.parkingSpotsRepository.updateAvailability(id, data.available);
+
+    return this.toResponseDTO(updated);
   }
 
   // El cuerpo llega del cliente, así que se valida el tipo y el valor de cada campo

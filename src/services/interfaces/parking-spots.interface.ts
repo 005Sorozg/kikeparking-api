@@ -1,4 +1,5 @@
-import {CreateParkingSpotRequestDTO, ParkingSpotResponseDTO,} from "../../dto/parking-spots.dto";
+import {CreateParkingSpotRequestDTO, ParkingSpotResponseDTO, UpdateAvailabilityRequestDTO} from "../../dto/parking-spots.dto";
+
 
 // Opciones de orden permitidas: rating (mayor primero) y price (menor primero)
 export const PARKING_SORT_OPTIONS = ["rating", "price"] as const;
@@ -15,4 +16,5 @@ export interface IParkingSpotsService {
   getParkingSpotById(id: number): Promise<ParkingSpotResponseDTO>;
   createParkingSpot(data: CreateParkingSpotRequestDTO, ownerId: number): Promise<ParkingSpotResponseDTO>;
   getMyParkingSpots(ownerId: number): Promise<ParkingSpotResponseDTO[]>;
+  updateAvailability(id: number, data: UpdateAvailabilityRequestDTO, ownerId: number): Promise<ParkingSpotResponseDTO>;
 }

@@ -6,4 +6,5 @@ export interface IParkingSpotsRepository {
   getParkingSpotById(id: number): Promise<ParkingSpot | undefined>;
   createParkingSpot(data: Omit<ParkingSpot, "id">): Promise<ParkingSpot>;
   getParkingSpotsByOwner(ownerId: number): Promise<ParkingSpot[]>;
+  updateAvailability(id: number, available: boolean): Promise<ParkingSpot>;
 }
