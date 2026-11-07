@@ -11,7 +11,7 @@ router.get("/", async (req, res) => {
   return controller.getParkingSpots(req, res);
 });
 
-router.get("/mine", requireAuth, async (req, res) => {
+router.get("/mine", requireAuth, requireRole("propietario"), async (req, res) => {
   const controller = container.resolve<ParkingSpotsController>("parkingSpotsController");
 
   return controller.getMyParkingSpots(req, res);
@@ -23,7 +23,7 @@ router.get("/:id", async (req, res) => {
   return controller.getParkingSpotById(req, res);
 });
 
-router.post("/", requireAuth, async (req, res) => {
+router.post("/", requireAuth, requireRole("propietario"), async (req, res) => {
   const controller = container.resolve<ParkingSpotsController>("parkingSpotsController");
 
   return controller.createParkingSpot(req, res);
