@@ -1,4 +1,4 @@
-import { ParkingSpot } from "../../data/models/parking-spot.model";
+import { ParkingSpot, ParkingSpotChanges } from "../../data/models/parking-spot.model";
 import { ParkingSpotsFilters } from "../../services/interfaces/parking-spots.interface";
 
 export interface IParkingSpotsRepository {
@@ -7,4 +7,5 @@ export interface IParkingSpotsRepository {
   createParkingSpot(data: Omit<ParkingSpot, "id">): Promise<ParkingSpot>;
   getParkingSpotsByOwner(ownerId: number): Promise<ParkingSpot[]>;
   updateAvailability(id: number, available: boolean): Promise<ParkingSpot>;
+  updateParkingSpot(id: number, changes: ParkingSpotChanges): Promise<ParkingSpot>;
 }

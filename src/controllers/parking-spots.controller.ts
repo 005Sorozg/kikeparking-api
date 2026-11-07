@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { CreateParkingSpotRequestDTO, UpdateAvailabilityRequestDTO } from "../dto/parking-spots.dto";
+import { CreateParkingSpotRequestDTO, UpdateAvailabilityRequestDTO, UpdateParkingSpotRequestDTO } from "../dto/parking-spots.dto";
 import {
   IParkingSpotsService,
   ParkingSpotsFilters,
@@ -52,6 +52,15 @@ export class ParkingSpotsController {
     const body = req.body as UpdateAvailabilityRequestDTO;
 
     const result = await this.parkingSpotsService.updateAvailability(id, body, req.user!.id);
+
+    res.status(200).json(result);
+  };
+
+    updateParkingSpot = async (req: Request, res: Response): Promise<void> => {
+    const id = Number(req.params.id);
+    const body = req.body as UpdateParkingSpotRequestDTO;
+
+    const result = await this.parkingSpotsService.updateParkingSpot(id, body, req.user!.id);
 
     res.status(200).json(result);
   };

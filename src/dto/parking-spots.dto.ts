@@ -21,3 +21,12 @@ export interface CreateParkingSpotRequestDTO {
 export interface UpdateAvailabilityRequestDTO {
   available: boolean;
 }
+
+// Datos que el propietario envía para editar su parqueadero.
+// Todos son opcionales: solo se actualiza lo que se envía.
+export interface UpdateParkingSpotRequestDTO {
+  title?: string;
+  neighborhood?: string;
+  address?: string;
+  pricePerHour?: number;
+}

@@ -1,4 +1,4 @@
-import { ParkingSpot } from "../data/models/parking-spot.model";
+import { ParkingSpot, ParkingSpotChanges } from "../data/models/parking-spot.model";
 import { prisma } from "../config/prisma";
 import { ParkingSpotsFilters } from "../services/interfaces/parking-spots.interface";
 import { IParkingSpotsRepository } from "./interfaces/parking-spots.interface";
@@ -41,5 +41,9 @@ export class ParkingSpotsRepository implements IParkingSpotsRepository {
 
   async updateAvailability(id: number, available: boolean): Promise<ParkingSpot> {
     return prisma.parkingSpot.update({ where: { id }, data: { available } });
+  }
+
+    async updateParkingSpot(id: number, changes: ParkingSpotChanges): Promise<ParkingSpot> {
+    return prisma.parkingSpot.update({ where: { id }, data: changes });
   }
 }

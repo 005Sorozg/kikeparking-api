@@ -36,4 +36,11 @@ router.patch("/:id/availability", requireAuth, requireRole("propietario"), async
   return controller.updateAvailability(req, res);
 });
 
+// Editar la información de un parqueadero (solo su dueño, lo revisa el servicio)
+router.patch("/:id", requireAuth, requireRole("propietario"), async (req, res) => {
+  const controller = container.resolve<ParkingSpotsController>("parkingSpotsController");
+
+  return controller.updateParkingSpot(req, res);
+});
+
 export default router;
