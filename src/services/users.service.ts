@@ -7,12 +7,16 @@ import { AppException } from "../exceptions/app.exception";
 import { AppErrors } from "../exceptions/errors/app.error";
 import { IUsersRepository } from "../repositories/interfaces/users.interface";
 import { IUsersService } from "./interfaces/users.interface";
+import { IImageStorage, UploadedFileData } from "./interfaces/image-storage.interface";
 
 // Cantidad de "rondas" que usa bcrypt para encriptar: más alto es más seguro pero más lento
 const SALT_ROUNDS = 10;
 
 export class UsersService implements IUsersService {
-  constructor(readonly usersRepository: IUsersRepository) {}
+    constructor(
+    readonly usersRepository: IUsersRepository,
+    readonly imageStorage: IImageStorage,
+  ) {}
 
   async registerUser(data: RegisterUserRequestDTO): Promise<UserResponseDTO> {
     const problems = this.validateRegisterData(data);
@@ -79,6 +83,35 @@ export class UsersService implements IUsersService {
     return users.map((user) => this.toResponseDTO(user));
   }
 
+    // Sube la foto de perfil. Cada usuario tiene un id fijo en Cloudinary,
+  // así que una foto nueva reemplaza a la anterior.
+  async updateAvatar(userId: number, file: UploadedFileData | undefined): Promise<UserResponseDTO> {
+    if (!file) {
+      const error = AppErrors.UPLOAD_NO_FILE;
+
+      throw new AppException(error.code, error.message, error.statusCode);
+    }
+
+    const uploaded = await this.imageStorage.upload(file.buffer, {
+      folder: "kikeparking/avatars",
+      publicId: `user-${userId}`,
+      maxSize: 512,
+    });
+
+    const user = await this.usersRepository.updateAvatar(userId, uploaded.url);
+
+    return this.toResponseDTO(user);
+  }
+
+  // Quita la foto de perfil: la app vuelve a mostrar el ícono por defecto
+  async removeAvatar(userId: number): Promise<UserResponseDTO> {
+    await this.imageStorage.delete(`kikeparking/avatars/user-${userId}`);
+
+    const user = await this.usersRepository.updateAvatar(userId, null);
+
+    return this.toResponseDTO(user);
+  }
+
   private validateRegisterData(data: RegisterUserRequestDTO): string[] {
     const problems: string[] = [];
 
@@ -108,6 +141,7 @@ export class UsersService implements IUsersService {
       name: user.name,
       email: user.email,
       role: user.role,
+      avatarUrl: user.avatarUrl ?? null,
     };
   }
 }

@@ -78,6 +78,24 @@ export const AppErrors = {
     statusCode: 403,
   },
 
+    UPLOAD_NO_FILE: {
+    code: "UPLOAD_NO_FILE",
+    message: "Debes adjuntar una imagen",
+    statusCode: 400,
+  },
+
+  UPLOAD_INVALID_FILE: {
+    code: "UPLOAD_INVALID_FILE",
+    message: "El archivo debe ser una imagen JPG, PNG o WebP",
+    statusCode: 400,
+  },
+
+  UPLOAD_FILE_TOO_LARGE: {
+    code: "UPLOAD_FILE_TOO_LARGE",
+    message: "La imagen no puede pesar más de 5 MB",
+    statusCode: 413,
+  },
+
   BOOKING_INVALID_DATA: {
     code: "BOOKING_INVALID_DATA",
     message: "Los datos de la reserva no son válidos",

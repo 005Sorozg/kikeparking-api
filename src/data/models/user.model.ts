@@ -8,4 +8,5 @@ export interface User {
   // Aquí se guarda la contraseña ya encriptada, nunca la original
   passwordHash: string;
   role: UserRole;
+  avatarUrl?: string | null;
 }

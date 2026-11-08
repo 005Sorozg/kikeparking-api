@@ -27,4 +27,17 @@ export class UsersController {
 
     res.status(200).json(result);
   };
+
+  updateAvatar = async (req: Request, res: Response): Promise<void> => {
+    // req.file lo deja listo el middleware de subida
+    const result = await this.usersService.updateAvatar(req.user!.id, req.file);
+
+    res.status(200).json(result);
+  };
+
+  removeAvatar = async (req: Request, res: Response): Promise<void> => {
+    const result = await this.usersService.removeAvatar(req.user!.id);
+
+    res.status(200).json(result);
+  };
 }

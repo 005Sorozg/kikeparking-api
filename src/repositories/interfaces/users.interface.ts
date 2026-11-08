@@ -4,4 +4,5 @@ export interface IUsersRepository {
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(data: Omit<User, "id">): Promise<User>;
   getAllUsers(): Promise<User[]>;
+  updateAvatar(id: number, avatarUrl: string | null): Promise<User>;
 }
