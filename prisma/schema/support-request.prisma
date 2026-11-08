@@ -1,0 +1,13 @@
+// Mensaje que un usuario envía al equipo de soporte desde "Obtén ayuda"
+model SupportRequest {
+  id        Int      @id @default(autoincrement())
+  subject   String
+  message   String
+  createdAt DateTime @default(now())
+  userId    Int
+  // Si se borra el usuario, se borran también sus mensajes de soporte
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("support_requests")
+}

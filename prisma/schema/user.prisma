@@ -12,6 +12,7 @@ model User {
   conversations             Conversation[]
   conversationParticipants  ConversationParticipant[]
   messages                  Message[]
+  supportRequests           SupportRequest[]
 
   @@map("users")
 }
