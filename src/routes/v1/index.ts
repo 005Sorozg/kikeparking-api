@@ -4,6 +4,7 @@ import usersRoutes from "./users.route";
 import bookingsRoutes from "./bookings.route";
 import favoritesRoutes from "./favorites.route";
 import conversationsRoutes from "./conversations.route";
+import supportRequestsRoutes from "./support-requests.route";
 
 const router = Router();
 
@@ -12,5 +13,6 @@ router.use("/users", usersRoutes);
 router.use("/conversations", conversationsRoutes);
 router.use("/bookings", bookingsRoutes);
 router.use("/favorites", favoritesRoutes);
+router.use("/support-requests", supportRequestsRoutes);
 
 export default router;
