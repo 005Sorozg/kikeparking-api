@@ -22,4 +22,9 @@ export class UsersRepository implements IUsersRepository {
 
     return users as User[];
   }
+    async updateAvatar(id: number, avatarUrl: string | null): Promise<User> {
+    const user = await prisma.user.update({ where: { id }, data: { avatarUrl } });
+
+    return user as User;
+  }
 }

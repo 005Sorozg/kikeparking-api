@@ -20,4 +20,9 @@ export const env = {
   logLevel: process.env.LOG_LEVEL || "info",
   apiPrefix: process.env.API_PREFIX || "/kikeparking-api",
   jwtSecret: process.env.JWT_SECRET || "dev-secret",
+  cloudinary: {
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME || "",
+    apiKey: process.env.CLOUDINARY_API_KEY || "",
+    apiSecret: process.env.CLOUDINARY_API_SECRET || "",
+  },
 };

@@ -4,6 +4,7 @@ model User {
   email        String   @unique
   passwordHash String
   role         String
+  avatarUrl    String?
   createdAt    DateTime @default(now())
   parkingSpots ParkingSpot[]
   bookings     Booking[]
