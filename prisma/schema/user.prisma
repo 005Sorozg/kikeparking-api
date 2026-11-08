@@ -9,6 +9,9 @@ model User {
   parkingSpots ParkingSpot[]
   bookings     Booking[]
   favorites    Favorite[]
+  conversations             Conversation[]
+  conversationParticipants  ConversationParticipant[]
+  messages                  Message[]
 
   @@map("users")
 }

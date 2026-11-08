@@ -12,6 +12,7 @@ model ParkingSpot {
   bookings     Booking[]
   photos       ParkingSpotPhoto[]
   favorites    Favorite[]
+  conversations Conversation[]
 
   @@map("parking_spots")
 } 

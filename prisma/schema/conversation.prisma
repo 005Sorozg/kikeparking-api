@@ -1,0 +1,50 @@
+// Chat entre un conductor y el propietario de un parqueadero
+model Conversation {
+  id            Int         @id @default(autoincrement())
+  parkingSpotId Int
+  parkingSpot   ParkingSpot @relation(fields: [parkingSpotId], references: [id], onDelete: Cascade)
+  // Conductor que inició el chat (el propietario es el dueño del parqueadero)
+  driverId      Int
+  driver        User        @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+  // Fecha del último mensaje: sirve para ordenar la lista de chats
+  lastMessageAt DateTime    @default(now())
+  participants  ConversationParticipant[]
+  messages      Message[]
+
+  // Un solo chat por conductor y parqueadero: "Contactar" otra vez abre el mismo
+  @@unique([parkingSpotId, driverId])
+  @@map("conversations")
+}
+
+// Cómo ve cada persona un chat: cada uno archiva o elimina sin afectar al otro
+model ConversationParticipant {
+  conversationId Int
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  userId         Int
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Los mensajes de la otra persona posteriores a esta fecha cuentan como no leídos
+  lastReadAt     DateTime     @default(now())
+  archived       Boolean      @default(false)
+  // "Eliminar para mí": el chat sale de la lista hasta que llegue un mensaje nuevo
+  deleted        Boolean      @default(false)
+  // Al eliminar se guarda la fecha: los mensajes anteriores ya no se le muestran
+  clearedAt      DateTime?
+
+  @@id([conversationId, userId])
+  @@index([userId])
+  @@map("conversation_participants")
+}
+
+model Message {
+  id             Int          @id @default(autoincrement())
+  conversationId Int
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       Int
+  sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  text           String
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId, id])
+  @@map("messages")
+}
