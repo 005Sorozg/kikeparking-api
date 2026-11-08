@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { LoginRequestDTO, RegisterUserRequestDTO, UpdateUserRequestDTO } from "../dto/users.dto";
+import { ChangePasswordRequestDTO, LoginRequestDTO, RegisterUserRequestDTO, UpdateUserRequestDTO } from "../dto/users.dto";
 import { IUsersService } from "../services/interfaces/users.interface";
 
 export class UsersController {
@@ -49,4 +49,12 @@ export class UsersController {
 
   res.status(200).json(result);
 };
+
+  changePassword = async (req: Request, res: Response): Promise<void> => {
+    const body = req.body as ChangePasswordRequestDTO;
+
+    await this.usersService.changePassword(req.user!.id, body);
+
+    res.status(200).json({ message: "Contraseña actualizada correctamente" });
+  };
 }

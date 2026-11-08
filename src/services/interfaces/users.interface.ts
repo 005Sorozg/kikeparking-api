@@ -1,4 +1,4 @@
-import { LoginRequestDTO, LoginResponseDTO, RegisterUserRequestDTO, UpdateUserRequestDTO, UserResponseDTO } from "../../dto/users.dto";
+import { ChangePasswordRequestDTO, LoginRequestDTO, LoginResponseDTO, RegisterUserRequestDTO, UpdateUserRequestDTO, UserResponseDTO } from "../../dto/users.dto";
 import { UploadedFileData } from "./image-storage.interface";
 
 export interface IUsersService {
@@ -8,4 +8,5 @@ export interface IUsersService {
   updateAvatar(userId: number, file: UploadedFileData | undefined): Promise<UserResponseDTO>;
   removeAvatar(userId: number): Promise<UserResponseDTO>;
   updateProfile(userId: number, data: UpdateUserRequestDTO): Promise<UserResponseDTO>;
+  changePassword(userId: number, data: ChangePasswordRequestDTO): Promise<void>;
 }

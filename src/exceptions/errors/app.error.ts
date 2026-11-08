@@ -60,6 +60,18 @@ export const AppErrors = {
     statusCode: 401,
   },
 
+    USER_NOT_FOUND: {
+    code: "USER_NOT_FOUND",
+    message: "Usuario no encontrado",
+    statusCode: 404,
+  },
+
+  USER_WRONG_PASSWORD: {
+    code: "USER_WRONG_PASSWORD",
+    message: "La contraseña actual no es correcta",
+    statusCode: 400,
+  },
+
   AUTH_TOKEN_MISSING: {
     code: "AUTH_TOKEN_MISSING",
     message: "Debes iniciar sesión para realizar esta acción",

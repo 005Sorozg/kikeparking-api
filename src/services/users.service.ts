@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { User, USER_ROLES } from "../data/models/user.model";
-import { LoginRequestDTO, LoginResponseDTO, RegisterUserRequestDTO, UpdateUserRequestDTO, UserResponseDTO } from "../dto/users.dto";
+import { ChangePasswordRequestDTO, LoginRequestDTO, LoginResponseDTO, RegisterUserRequestDTO, UpdateUserRequestDTO, UserResponseDTO } from "../dto/users.dto";
 import { env } from "../config/env";
 import { AppException } from "../exceptions/app.exception";
 import { AppErrors } from "../exceptions/errors/app.error";
@@ -147,6 +147,38 @@ async updateProfile(userId: number, data: UpdateUserRequestDTO): Promise<UserRes
   return this.toResponseDTO(user);
 }
 
+  // Cambia la contraseña: exige la actual para confirmar que de verdad es el dueño de la cuenta
+  async changePassword(userId: number, data: ChangePasswordRequestDTO): Promise<void> {
+    const problems = this.validateChangePasswordData(data);
+
+    if (problems.length > 0) {
+      const error = AppErrors.USER_INVALID_DATA;
+
+      throw new AppException(error.code, `${error.message}: ${problems.join(", ")}`, error.statusCode);
+    }
+
+    const user = await this.usersRepository.getUserById(userId);
+
+    if (!user) {
+      const error = AppErrors.USER_NOT_FOUND;
+
+      throw new AppException(error.code, error.message, error.statusCode);
+    }
+
+    const passwordMatches = await bcrypt.compare(data.currentPassword, user.passwordHash);
+
+    if (!passwordMatches) {
+      const error = AppErrors.USER_WRONG_PASSWORD;
+
+      throw new AppException(error.code, error.message, error.statusCode);
+    }
+
+    // Igual que en el registro: solo se guarda la versión encriptada
+    const passwordHash = await bcrypt.hash(data.newPassword, SALT_ROUNDS);
+
+    await this.usersRepository.updatePassword(userId, passwordHash);
+  }
+
   private validateRegisterData(data: RegisterUserRequestDTO): string[] {
     const problems: string[] = [];
 
@@ -186,6 +218,22 @@ async updateProfile(userId: number, data: UpdateUserRequestDTO): Promise<UserRes
 
   return problems;
 }
+
+private validateChangePasswordData(data: ChangePasswordRequestDTO): string[] {
+    const problems: string[] = [];
+
+    if (typeof data?.currentPassword !== "string" || data.currentPassword.length === 0) {
+      problems.push("currentPassword es obligatoria");
+    }
+
+    if (typeof data?.newPassword !== "string" || data.newPassword.length < 6) {
+      problems.push("newPassword debe tener al menos 6 caracteres");
+    } else if (data.newPassword === data.currentPassword) {
+      problems.push("la nueva contraseña debe ser distinta a la actual");
+    }
+
+    return problems;
+  }
 
   // Convierte el modelo interno al formato que se devuelve al cliente (sin passwordHash)
   private toResponseDTO(user: User): UserResponseDTO {
