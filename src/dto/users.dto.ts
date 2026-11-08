@@ -28,3 +28,9 @@ export interface LoginResponseDTO {
   user: UserResponseDTO;
   token: string;
 }
+
+// Datos que el cliente puede cambiar de su propio perfil (todos son opcionales)
+export interface UpdateUserRequestDTO {
+  name?: string;
+  email?: string;
+}

@@ -27,4 +27,9 @@ export class UsersRepository implements IUsersRepository {
 
     return user as User;
   }
+  async updateUser(id: number, data: Partial<Pick<User, "name" | "email">>): Promise<User> {
+  const user = await prisma.user.update({ where: { id }, data });
+
+  return user as User;
+}
 }
