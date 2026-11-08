@@ -43,4 +43,11 @@ router.patch("/me", requireAuth, async (req, res) => {
 
   return controller.updateProfile(req, res);
 });
+
+// Cambio de contraseña del usuario que inició sesión (cualquier rol)
+router.patch("/me/password", requireAuth, async (req, res) => {
+  const controller = container.resolve<UsersController>("usersController");
+
+  return controller.changePassword(req, res);
+});
 export default router;
