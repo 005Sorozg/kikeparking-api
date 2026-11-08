@@ -12,6 +12,7 @@ const DETAILS = {
       address: true,
       pricePerHour: true,
       ownerId: true,
+      photos: { select: { url: true }, orderBy: { id: "asc" }, take: 1 },
     },
   },
   driver: { select: { id: true, name: true } },

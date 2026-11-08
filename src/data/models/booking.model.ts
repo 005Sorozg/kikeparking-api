@@ -31,6 +31,7 @@ export interface BookingWithDetails extends Booking {
     address: string;
     pricePerHour: number;
     ownerId: number;
+    photos: { url: string }[];
   };
   driver: {
     id: number;
