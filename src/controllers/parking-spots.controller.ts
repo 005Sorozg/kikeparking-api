@@ -64,4 +64,22 @@ export class ParkingSpotsController {
 
     res.status(200).json(result);
   };
+
+    addPhoto = async (req: Request, res: Response): Promise<void> => {
+    const id = Number(req.params.id);
+
+    // req.file lo deja listo el middleware de subida
+    const result = await this.parkingSpotsService.addPhoto(id, req.file, req.user!.id);
+
+    res.status(201).json(result);
+  };
+
+  removePhoto = async (req: Request, res: Response): Promise<void> => {
+    const id = Number(req.params.id);
+    const photoId = Number(req.params.photoId);
+
+    const result = await this.parkingSpotsService.removePhoto(id, photoId, req.user!.id);
+
+    res.status(200).json(result);
+  };
 }

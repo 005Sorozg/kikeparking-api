@@ -96,6 +96,24 @@ export const AppErrors = {
     statusCode: 413,
   },
 
+    PARKING_PHOTO_LIMIT: {
+    code: "PARKING_PHOTO_LIMIT",
+    message: "Un parqueadero puede tener máximo 5 fotos",
+    statusCode: 409,
+  },
+
+  PARKING_PHOTO_INVALID_ID: {
+    code: "PARKING_PHOTO_INVALID_ID",
+    message: "El id de la foto debe ser un número entero positivo",
+    statusCode: 400,
+  },
+
+  PARKING_PHOTO_NOT_FOUND: {
+    code: "PARKING_PHOTO_NOT_FOUND",
+    message: "Foto no encontrada en este parqueadero",
+    statusCode: 404,
+  },
+
   BOOKING_INVALID_DATA: {
     code: "BOOKING_INVALID_DATA",
     message: "Los datos de la reserva no son válidos",
