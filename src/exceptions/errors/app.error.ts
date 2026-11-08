@@ -209,4 +209,9 @@ export const AppErrors = {
     message: "El mensaje debe tener entre 1 y 1000 caracteres",
     statusCode: 400,
   },
+    SUPPORT_REQUEST_INVALID_DATA: {
+    code: "SUPPORT_REQUEST_INVALID_DATA",
+    message: "Los datos de la solicitud de ayuda no son válidos",
+    statusCode: 400,
+  },
 };
