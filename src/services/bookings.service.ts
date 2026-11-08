@@ -193,6 +193,7 @@ export class BookingsService implements IBookingsService {
         neighborhood: booking.parkingSpot.neighborhood,
         address: booking.parkingSpot.address,
         pricePerHour: booking.parkingSpot.pricePerHour,
+        photoUrl: booking.parkingSpot.photos[0]?.url ?? null,
       },
       driver: booking.driver,
     };

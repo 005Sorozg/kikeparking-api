@@ -33,6 +33,7 @@ export interface BookingResponseDTO {
     neighborhood: string;
     address: string;
     pricePerHour: number;
+    photoUrl: string | null;
   };
   driver: {
     id: number;
