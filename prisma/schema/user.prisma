@@ -8,6 +8,7 @@ model User {
   createdAt    DateTime @default(now())
   parkingSpots ParkingSpot[]
   bookings     Booking[]
+  favorites    Favorite[]
 
   @@map("users")
 }
