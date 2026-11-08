@@ -32,4 +32,13 @@ export class UsersRepository implements IUsersRepository {
 
   return user as User;
 }
+async getUserById(id: number): Promise<User | undefined> {
+  const user = await prisma.user.findUnique({ where: { id } });
+
+  return (user as User) ?? undefined;
+}
+
+async updatePassword(id: number, passwordHash: string): Promise<void> {
+  await prisma.user.update({ where: { id }, data: { passwordHash } });
+}
 }

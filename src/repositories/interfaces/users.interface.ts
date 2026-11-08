@@ -6,4 +6,6 @@ export interface IUsersRepository {
   getAllUsers(): Promise<User[]>;
   updateAvatar(id: number, avatarUrl: string | null): Promise<User>;
   updateUser(id: number, data: Partial<Pick<User, "name" | "email">>): Promise<User>;
+  getUserById(id: number): Promise<User | undefined>;
+  updatePassword(id: number, passwordHash: string): Promise<void>;
 }
