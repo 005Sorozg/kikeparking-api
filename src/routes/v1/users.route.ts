@@ -37,4 +37,10 @@ router.delete("/me/avatar", requireAuth, async (req, res) => {
   return controller.removeAvatar(req, res);
 });
 
+// Datos del perfil del usuario que inició sesión (cualquier rol)
+router.patch("/me", requireAuth, async (req, res) => {
+  const controller = container.resolve<UsersController>("usersController");
+
+  return controller.updateProfile(req, res);
+});
 export default router;

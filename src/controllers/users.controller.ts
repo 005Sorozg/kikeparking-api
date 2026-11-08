@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { LoginRequestDTO, RegisterUserRequestDTO } from "../dto/users.dto";
+import { LoginRequestDTO, RegisterUserRequestDTO, UpdateUserRequestDTO } from "../dto/users.dto";
 import { IUsersService } from "../services/interfaces/users.interface";
 
 export class UsersController {
@@ -40,4 +40,13 @@ export class UsersController {
 
     res.status(200).json(result);
   };
+
+  updateProfile = async (req: Request, res: Response): Promise<void> => {
+  // El id sale del token (req.user), nunca del cuerpo: así nadie edita a otro usuario
+  const body = req.body as UpdateUserRequestDTO;
+
+  const result = await this.usersService.updateProfile(req.user!.id, body);
+
+  res.status(200).json(result);
+};
 }
