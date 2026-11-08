@@ -1,0 +1,13 @@
+model ParkingSpotPhoto {
+  id            Int         @id @default(autoincrement())
+  url           String
+  // Identificador de la imagen en Cloudinary, necesario para poder borrarla
+  publicId      String      @unique
+  createdAt     DateTime    @default(now())
+  parkingSpotId Int
+  // Si se borra el parqueadero, se borran también los registros de sus fotos
+  parkingSpot   ParkingSpot @relation(fields: [parkingSpotId], references: [id], onDelete: Cascade)
+
+  @@index([parkingSpotId])
+  @@map("parking_spot_photos")
+}

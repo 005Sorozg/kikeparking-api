@@ -1,4 +1,5 @@
-import { ParkingSpot, ParkingSpotChanges } from "../data/models/parking-spot.model";
+import { ParkingSpotChanges, ParkingSpotWithPhotos } from "../data/models/parking-spot.model";
+import { IImageStorage, UploadedFileData } from "./interfaces/image-storage.interface";
 import { CreateParkingSpotRequestDTO, ParkingSpotResponseDTO, UpdateAvailabilityRequestDTO, UpdateParkingSpotRequestDTO } from "../dto/parking-spots.dto";
 import { AppException } from "../exceptions/app.exception";
 import { AppErrors } from "../exceptions/errors/app.error";
@@ -9,8 +10,14 @@ import {
   ParkingSpotsFilters,
 } from "./interfaces/parking-spots.interface";
 
+// Cantidad máxima de fotos por parqueadero
+const MAX_PHOTOS_PER_SPOT = 5;
+
 export class ParkingSpotsService implements IParkingSpotsService {
-  constructor(readonly parkingSpotsRepository: IParkingSpotsRepository) {}
+    constructor(
+    readonly parkingSpotsRepository: IParkingSpotsRepository,
+    readonly imageStorage: IImageStorage,
+  ) {}
 
   async getParkingSpots(filters?: ParkingSpotsFilters): Promise<ParkingSpotResponseDTO[]> {
     // El valor llega del query string, así que se valida en tiempo de ejecución
@@ -111,6 +118,91 @@ export class ParkingSpotsService implements IParkingSpotsService {
     const updated = await this.parkingSpotsRepository.updateAvailability(id, data.available);
 
     return this.toResponseDTO(updated);
+  }
+
+    // Agrega una foto al parqueadero (máximo 5). Solo el dueño puede hacerlo.
+  async addPhoto(id: number, file: UploadedFileData | undefined, ownerId: number): Promise<ParkingSpotResponseDTO> {
+    const spot = await this.getOwnedSpot(id, ownerId);
+
+    if (!file) {
+      const error = AppErrors.UPLOAD_NO_FILE;
+
+      throw new AppException(error.code, error.message, error.statusCode);
+    }
+
+    if (spot.photos.length >= MAX_PHOTOS_PER_SPOT) {
+      const error = AppErrors.PARKING_PHOTO_LIMIT;
+
+      throw new AppException(error.code, error.message, error.statusCode);
+    }
+
+    const uploaded = await this.imageStorage.upload(file.buffer, {
+      folder: `kikeparking/parking-spots/${id}`,
+      maxSize: 1600,
+    });
+
+    try {
+      await this.parkingSpotsRepository.addPhoto(id, uploaded.url, uploaded.publicId);
+    } catch (error) {
+      // Si no se pudo guardar en la base de datos, se borra la imagen para no dejarla huérfana
+      await this.imageStorage.delete(uploaded.publicId);
+
+      throw error;
+    }
+
+    return this.toResponseDTO(await this.getOwnedSpot(id, ownerId));
+  }
+
+  // Borra una foto del parqueadero. Solo el dueño puede hacerlo.
+  async removePhoto(id: number, photoId: number, ownerId: number): Promise<ParkingSpotResponseDTO> {
+    const spot = await this.getOwnedSpot(id, ownerId);
+
+    if (!Number.isInteger(photoId) || photoId <= 0) {
+      const error = AppErrors.PARKING_PHOTO_INVALID_ID;
+
+      throw new AppException(error.code, error.message, error.statusCode);
+    }
+
+    // Se busca entre las fotos de ESTE parqueadero: no se puede borrar la foto de otro
+    const photo = spot.photos.find((item) => item.id === photoId);
+
+    if (!photo) {
+      const error = AppErrors.PARKING_PHOTO_NOT_FOUND;
+
+      throw new AppException(error.code, error.message, error.statusCode);
+    }
+
+    await this.parkingSpotsRepository.deletePhoto(photoId);
+
+    // La foto ya no existe para la app; si falla el borrado en Cloudinary no se interrumpe la respuesta
+    await this.imageStorage.delete(photo.publicId).catch(() => undefined);
+
+    return this.toResponseDTO({ ...spot, photos: spot.photos.filter((item) => item.id !== photoId) });
+  }
+
+  // Valida el id, busca el parqueadero y confirma que pertenece al propietario
+  private async getOwnedSpot(id: number, ownerId: number): Promise<ParkingSpotWithPhotos> {
+    if (!Number.isInteger(id) || id <= 0) {
+      const error = AppErrors.PARKING_INVALID_ID;
+
+      throw new AppException(error.code, error.message, error.statusCode);
+    }
+
+    const spot = await this.parkingSpotsRepository.getParkingSpotById(id);
+
+    if (!spot) {
+      const error = AppErrors.PARKING_NOT_FOUND;
+
+      throw new AppException(error.code, error.message, error.statusCode);
+    }
+
+    if (spot.ownerId !== ownerId) {
+      const error = AppErrors.PARKING_NOT_OWNED;
+
+      throw new AppException(error.code, error.message, error.statusCode);
+    }
+
+    return spot;
   }
 
   // El cuerpo llega del cliente, así que se valida el tipo y el valor de cada campo
@@ -215,7 +307,8 @@ export class ParkingSpotsService implements IParkingSpotsService {
   }
 
   // Convierte el modelo interno al formato que se devuelve al cliente
-  private toResponseDTO(spot: ParkingSpot): ParkingSpotResponseDTO {
+    // Convierte el modelo interno al formato que se devuelve al cliente
+  private toResponseDTO(spot: ParkingSpotWithPhotos): ParkingSpotResponseDTO {
     return {
       id: spot.id,
       title: spot.title,
@@ -225,6 +318,7 @@ export class ParkingSpotsService implements IParkingSpotsService {
       available: spot.available,
       rating: spot.rating,
       ownerId: spot.ownerId,
+      photos: spot.photos.map((photo) => ({ id: photo.id, url: photo.url })),
     };
   }
 }

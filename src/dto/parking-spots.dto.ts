@@ -1,3 +1,9 @@
+// Foto de un parqueadero: solo lo que necesita la app
+export interface ParkingSpotPhotoDTO {
+  id: number;
+  url: string;
+}
+
 export interface ParkingSpotResponseDTO {
   id: number;
   title: string;
@@ -7,6 +13,7 @@ export interface ParkingSpotResponseDTO {
   available: boolean;
   rating: number;
   ownerId: number;
+  photos: ParkingSpotPhotoDTO[];
 }
 
 // Datos que el cliente envía para crear un parqueadero
