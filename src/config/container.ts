@@ -13,6 +13,9 @@ import { CloudinaryImageStorage } from "../services/cloudinary-image-storage.ser
 import { FavoritesController } from "../controllers/favorites.controller";
 import { FavoritesService } from "../services/favorites.service";
 import { FavoritesRepository } from "../repositories/favorites.repository";
+import { ConversationsController } from "../controllers/conversations.controller";
+import { ConversationsService } from "../services/conversations.service";
+import { ConversationsRepository } from "../repositories/conversations.repository";
 
 // Modo CLASSIC: awilix inyecta según el nombre de cada parámetro del constructor
 export const container = createContainer({
@@ -26,18 +29,21 @@ container.register({
   usersController: asClass(UsersController).scoped(),
   bookingsController: asClass(BookingsController).scoped(),
   favoritesController: asClass(FavoritesController).scoped(),
+  conversationsController: asClass(ConversationsController).scoped(),
   
   // services
   parkingSpotsService: asClass(ParkingSpotsService).scoped(),
   usersService: asClass(UsersService).scoped(),
   bookingsService: asClass(BookingsService).scoped(),
   favoritesService: asClass(FavoritesService).scoped(),
+  conversationsService: asClass(ConversationsService).scoped(),
 
   // repositories
   parkingSpotsRepository: asClass(ParkingSpotsRepository).scoped(),
   usersRepository: asClass(UsersRepository).scoped(),
   bookingsRepository: asClass(BookingsRepository).scoped(),
   favoritesRepository: asClass(FavoritesRepository).scoped(),
+  conversationsRepository: asClass(ConversationsRepository).scoped(),
 
   // infrastructure
   imageStorage: asClass(CloudinaryImageStorage).scoped(),

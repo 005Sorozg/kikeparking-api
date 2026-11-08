@@ -167,4 +167,34 @@ export const AppErrors = {
     message: "No se puede cancelar una reserva que ya terminó",
     statusCode: 409,
   },
+
+  CONVERSATION_INVALID_ID: {
+    code: "CONVERSATION_INVALID_ID",
+    message: "El id del chat debe ser un número entero positivo",
+    statusCode: 400,
+  },
+
+  CONVERSATION_NOT_FOUND: {
+    code: "CONVERSATION_NOT_FOUND",
+    message: "Chat no encontrado",
+    statusCode: 404,
+  },
+
+  CONVERSATION_OWN_SPOT: {
+    code: "CONVERSATION_OWN_SPOT",
+    message: "No puedes abrir un chat con tu propio parqueadero",
+    statusCode: 400,
+  },
+
+  CONVERSATION_INVALID_DATA: {
+    code: "CONVERSATION_INVALID_DATA",
+    message: "Los datos del chat no son válidos",
+    statusCode: 400,
+  },
+
+  MESSAGE_INVALID_TEXT: {
+    code: "MESSAGE_INVALID_TEXT",
+    message: "El mensaje debe tener entre 1 y 1000 caracteres",
+    statusCode: 400,
+  },
 };
