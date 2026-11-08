@@ -1,0 +1,14 @@
+// Parqueadero que un conductor guardó con el corazón
+model Favorite {
+  userId        Int
+  // Si se borra el usuario o el parqueadero, se borra también el favorito
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parkingSpotId Int
+  parkingSpot   ParkingSpot @relation(fields: [parkingSpotId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+
+  // Un mismo parqueadero solo puede estar una vez en los favoritos de cada usuario
+  @@id([userId, parkingSpotId])
+  @@index([parkingSpotId])
+  @@map("favorites")
+}
