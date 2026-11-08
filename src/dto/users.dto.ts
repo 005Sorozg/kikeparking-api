@@ -34,3 +34,8 @@ export interface UpdateUserRequestDTO {
   name?: string;
   email?: string;
 }
+// Datos para cambiar la contraseña del usuario que inició sesión
+export interface ChangePasswordRequestDTO {
+  currentPassword: string;
+  newPassword: string;
+}
