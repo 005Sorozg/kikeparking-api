@@ -209,9 +209,28 @@ export const AppErrors = {
     message: "El mensaje debe tener entre 1 y 1000 caracteres",
     statusCode: 400,
   },
-    SUPPORT_REQUEST_INVALID_DATA: {
+
+  SUPPORT_REQUEST_INVALID_DATA: {
     code: "SUPPORT_REQUEST_INVALID_DATA",
     message: "Los datos de la solicitud de ayuda no son válidos",
     statusCode: 400,
+  },
+
+  REVIEW_INVALID_DATA: {
+    code: "REVIEW_INVALID_DATA",
+    message: "Los datos de la calificación no son válidos",
+    statusCode: 400,
+  },
+
+  REVIEW_NOT_COMPLETED: {
+    code: "REVIEW_NOT_COMPLETED",
+    message: "Solo se pueden calificar reservas completadas",
+    statusCode: 409,
+  },
+  
+  REVIEW_ALREADY_EXISTS: {
+    code: "REVIEW_ALREADY_EXISTS",
+    message: "Ya calificaste esta reserva",
+    statusCode: 409,
   },
 };

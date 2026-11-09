@@ -58,13 +58,13 @@ export class BookingsService implements IBookingsService {
       this.fail(AppErrors.BOOKING_TIME_TAKEN);
     }
 
-    return this.toResponseDTO(booking);
+    return this.toResponseDTO(booking, driverId);
   }
 
   async getMyBookings(driverId: number): Promise<BookingResponseDTO[]> {
     const bookings = await this.bookingsRepository.getBookingsByDriver(driverId);
 
-    return bookings.map((booking) => this.toResponseDTO(booking));
+    return bookings.map((booking) => this.toResponseDTO(booking, driverId));
   }
 
   async getReceivedBookings(ownerId: number, parkingSpotId?: number): Promise<BookingResponseDTO[]> {
@@ -87,7 +87,7 @@ export class BookingsService implements IBookingsService {
 
     const bookings = await this.bookingsRepository.getBookingsByOwner(ownerId, parkingSpotId);
 
-    return bookings.map((booking) => this.toResponseDTO(booking));
+    return bookings.map((booking) => this.toResponseDTO(booking, ownerId));
   }
 
   async cancelBooking(id: number, userId: number): Promise<BookingResponseDTO> {
@@ -119,7 +119,7 @@ export class BookingsService implements IBookingsService {
 
     const cancelled = await this.bookingsRepository.cancelBooking(id);
 
-    return this.toResponseDTO(cancelled);
+    return this.toResponseDTO(cancelled, userId);
   }
 
   async getOccupiedSlots(parkingSpotId: number): Promise<OccupiedSlotResponseDTO[]> {
@@ -189,7 +189,10 @@ export class BookingsService implements IBookingsService {
   }
 
   // Convierte el modelo interno al formato que se devuelve al cliente
-  private toResponseDTO(booking: BookingWithDetails): BookingResponseDTO {
+  // viewerId: quien consulta, para saber si ya dejó su reseña en esta reserva
+  private toResponseDTO(booking: BookingWithDetails, viewerId: number): BookingResponseDTO {
+    const myReview = booking.reviews.find((review) => review.authorId === viewerId);
+
     return {
       id: booking.id,
       vehicleType: booking.vehicleType,
@@ -208,7 +211,13 @@ export class BookingsService implements IBookingsService {
         pricePerHour: booking.parkingSpot.pricePerHour,
         photoUrl: booking.parkingSpot.photos[0]?.url ?? null,
       },
-      driver: booking.driver,
+      driver: {
+        id: booking.driver.id,
+        name: booking.driver.name,
+        rating: booking.driver.driverRating,
+        reviewCount: booking.driver.driverReviewCount,
+      },
+      myReview: myReview ? { rating: myReview.rating } : null,
     };
   }
 }

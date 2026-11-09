@@ -56,6 +56,7 @@ export class FavoritesService implements IFavoritesService {
       pricePerHour: spot.pricePerHour,
       available: spot.available,
       rating: spot.rating,
+      reviewCount: spot.reviewCount,
       ownerId: spot.ownerId,
       photos: spot.photos.map((photo) => ({ id: photo.id, url: photo.url })),
     };

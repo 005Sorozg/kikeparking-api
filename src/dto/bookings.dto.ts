@@ -40,6 +40,11 @@ export interface BookingResponseDTO {
   driver: {
     id: number;
     name: string;
+    // Calificación del conductor (la ve el propietario antes de aceptarlo)
+    rating: number;
+    reviewCount: number;
   };
+  // La reseña que dejó quien consulta en esta reserva, o null si aún no califica
+  myReview: { rating: number } | null;
 }
 

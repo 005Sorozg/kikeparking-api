@@ -39,5 +39,9 @@ export interface BookingWithDetails extends Booking {
   driver: {
     id: number;
     name: string;
+    driverRating: number;
+    driverReviewCount: number;
   };
+  // Reseñas de esta reserva (como mucho una de cada lado)
+  reviews: { authorId: number; rating: number }[];
 }

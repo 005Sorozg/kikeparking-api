@@ -12,6 +12,8 @@ export interface ParkingSpotResponseDTO {
   pricePerHour: number;
   available: boolean;
   rating: number;
+  // Cantidad de reseñas (0 = parqueadero nuevo, sin calificar)
+  reviewCount: number;
   ownerId: number;
   photos: ParkingSpotPhotoDTO[];
 }

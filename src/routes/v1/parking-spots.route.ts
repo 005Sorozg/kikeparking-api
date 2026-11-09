@@ -3,6 +3,7 @@ import { container } from "../../config/container";
 import { ParkingSpotsController } from "../../controllers/parking-spots.controller";
 import { requireAuth, requireRole  } from "../../middlewares/auth.middleware";
 import { uploadSingleImage } from "../../middlewares/upload.middleware";
+import { ReviewsController } from "../../controllers/reviews.controller";
 
 const router = Router();
 
@@ -16,6 +17,13 @@ router.get("/mine", requireAuth, requireRole("propietario"), async (req, res) =>
   const controller = container.resolve<ParkingSpotsController>("parkingSpotsController");
 
   return controller.getMyParkingSpots(req, res);
+});
+
+// Reseñas de un parqueadero (públicas, como el detalle)
+router.get("/:id/reviews", async (req, res) => {
+  const controller = container.resolve<ReviewsController>("reviewsController");
+
+  return controller.getParkingSpotReviews(req, res);
 });
 
 router.get("/:id", async (req, res) => {
