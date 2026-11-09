@@ -69,6 +69,7 @@ export class ParkingSpotsService implements IParkingSpotsService {
       pricePerHour: data.pricePerHour,
       available: true,
       rating: 0,
+      reviewCount: 0,
       ownerId: ownerId,
     });
 
@@ -317,6 +318,7 @@ export class ParkingSpotsService implements IParkingSpotsService {
       pricePerHour: spot.pricePerHour,
       available: spot.available,
       rating: spot.rating,
+      reviewCount: spot.reviewCount,
       ownerId: spot.ownerId,
       photos: spot.photos.map((photo) => ({ id: photo.id, url: photo.url })),
     };

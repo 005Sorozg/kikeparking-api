@@ -6,6 +6,7 @@ model ParkingSpot {
   pricePerHour Int
   available    Boolean  @default(true)
   rating       Float    @default(0)
+  reviewCount  Int      @default(0)
   createdAt    DateTime @default(now())
   ownerId      Int
   owner        User    @relation(fields: [ownerId], references: [id])
@@ -13,6 +14,7 @@ model ParkingSpot {
   photos       ParkingSpotPhoto[]
   favorites    Favorite[]
   conversations Conversation[]
+  reviews       Review[]
 
   @@map("parking_spots")
 } 

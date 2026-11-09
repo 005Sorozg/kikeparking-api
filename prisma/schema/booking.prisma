@@ -13,6 +13,7 @@ model Booking {
   parkingSpot   ParkingSpot @relation(fields: [parkingSpotId], references: [id])
   driverId      Int
   driver        User        @relation(fields: [driverId], references: [id])
+  reviews       Review[]
 
   @@index([parkingSpotId, startAt])
   @@index([driverId])

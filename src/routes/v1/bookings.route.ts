@@ -2,6 +2,7 @@ import { Router } from "express";
 import { container } from "../../config/container";
 import { BookingsController } from "../../controllers/bookings.controller";
 import { requireAuth, requireRole } from "../../middlewares/auth.middleware";
+import { ReviewsController } from "../../controllers/reviews.controller";
 
 const router = Router();
 
@@ -41,6 +42,14 @@ router.patch("/:id/cancel", async (req, res) => {
   const controller = container.resolve<BookingsController>("bookingsController");
 
   return controller.cancelBooking(req, res);
+});
+
+// Calificar una reserva completada: el conductor califica el parqueadero
+// y el propietario califica al conductor (lo decide el servicio según quién envía)
+router.post("/:id/review", async (req, res) => {
+  const controller = container.resolve<ReviewsController>("reviewsController");
+
+  return controller.createReview(req, res);
 });
 
 export default router;

@@ -13,6 +13,10 @@ model User {
   conversationParticipants  ConversationParticipant[]
   messages                  Message[]
   supportRequests           SupportRequest[]
+  driverRating              Float    @default(0)
+  driverReviewCount         Int      @default(0)
+  reviewsWritten            Review[] @relation("ReviewAuthor")
+  reviewsReceived           Review[] @relation("ReviewedDriver")
 
   @@map("users")
 }

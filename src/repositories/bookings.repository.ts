@@ -15,7 +15,8 @@ const DETAILS = {
       photos: { select: { url: true }, orderBy: { id: "asc" }, take: 1 },
     },
   },
-  driver: { select: { id: true, name: true } },
+  driver: { select: { id: true, name: true, driverRating: true, driverReviewCount: true } },
+  reviews: { select: { authorId: true, rating: true } },
 } as const;
 
 const MAX_ATTEMPTS = 3;

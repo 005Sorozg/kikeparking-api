@@ -1,0 +1,27 @@
+// Calificación que se deja al terminar una reserva. Va en las dos direcciones:
+// el conductor califica el parqueadero y el propietario califica al conductor.
+model Review {
+  id            Int         @id @default(autoincrement())
+  bookingId     Int
+  booking       Booking     @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  // "parking_spot": el conductor calificó el parqueadero
+  // "driver": el propietario calificó al conductor
+  target        String
+  authorId      Int
+  author        User        @relation("ReviewAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  // Se guardan para sacar los promedios rápido, sin pasar por la reserva
+  parkingSpotId Int
+  parkingSpot   ParkingSpot @relation(fields: [parkingSpotId], references: [id], onDelete: Cascade)
+  driverId      Int
+  driver        User        @relation("ReviewedDriver", fields: [driverId], references: [id], onDelete: Cascade)
+  // De 1 a 5 estrellas
+  rating        Int
+  comment       String?
+  createdAt     DateTime    @default(now())
+
+  // Cada lado califica una sola vez por reserva
+  @@unique([bookingId, target])
+  @@index([parkingSpotId, target])
+  @@index([driverId, target])
+  @@map("reviews")
+}
