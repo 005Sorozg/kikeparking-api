@@ -1,10 +1,12 @@
+import { ParkingFeatures } from "../data/models/parking-spot.model";
+
 // Foto de un parqueadero: solo lo que necesita la app
 export interface ParkingSpotPhotoDTO {
   id: number;
   url: string;
 }
 
-export interface ParkingSpotResponseDTO {
+  export interface ParkingSpotResponseDTO extends ParkingFeatures {
   id: number;
   title: string;
   neighborhood: string;
@@ -18,8 +20,8 @@ export interface ParkingSpotResponseDTO {
   photos: ParkingSpotPhotoDTO[];
 }
 
-// Datos que el cliente envía para crear un parqueadero
-export interface CreateParkingSpotRequestDTO {
+  // Las características son opcionales: si no se envían, acepta carros y motos y lo demás queda en false
+  export interface CreateParkingSpotRequestDTO extends Partial<ParkingFeatures> {
   title: string;
   neighborhood: string;
   address: string;
@@ -33,7 +35,7 @@ export interface UpdateAvailabilityRequestDTO {
 
 // Datos que el propietario envía para editar su parqueadero.
 // Todos son opcionales: solo se actualiza lo que se envía.
-export interface UpdateParkingSpotRequestDTO {
+  export interface UpdateParkingSpotRequestDTO extends Partial<ParkingFeatures> {
   title?: string;
   neighborhood?: string;
   address?: string;

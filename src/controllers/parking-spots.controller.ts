@@ -14,6 +14,11 @@ export class ParkingSpotsController {
       search: req.query.search as string | undefined,
       onlyAvailable: req.query.onlyAvailable === "true",
       sort: req.query.sort as ParkingSpotsSort | undefined,
+      vehicle: req.query.vehicle as "carro" | "moto" | undefined,
+      covered: req.query.covered === "true",
+      hasSecurity: req.query.hasSecurity === "true",
+      hasCameras: req.query.hasCameras === "true",
+      hasEvCharging: req.query.hasEvCharging === "true",
     };
 
     const result = await this.parkingSpotsService.getParkingSpots(filters);

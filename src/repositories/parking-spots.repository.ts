@@ -18,6 +18,12 @@ export class ParkingSpotsRepository implements IParkingSpotsRepository {
           ],
         }),
         ...(filters?.onlyAvailable && { available: true }),
+        ...(filters?.vehicle === "carro" && { acceptsCars: true }),
+        ...(filters?.vehicle === "moto" && { acceptsMotorcycles: true }),
+        ...(filters?.covered && { covered: true }),
+        ...(filters?.hasSecurity && { hasSecurity: true }),
+        ...(filters?.hasCameras && { hasCameras: true }),
+        ...(filters?.hasEvCharging && { hasEvCharging: true }),
       },
       orderBy:
         filters?.sort === "rating"

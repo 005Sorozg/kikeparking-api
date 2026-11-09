@@ -1,4 +1,16 @@
-export interface ParkingSpot {
+// Características que el propietario marca en su parqueadero
+export const PARKING_FEATURES = [
+  "acceptsCars",
+  "acceptsMotorcycles",
+  "covered",
+  "hasSecurity",
+  "hasCameras",
+  "hasEvCharging",
+] as const;
+export type ParkingFeature = (typeof PARKING_FEATURES)[number];
+export type ParkingFeatures = Record<ParkingFeature, boolean>;
+
+export interface ParkingSpot extends ParkingFeatures {
   id: number;
   title: string;
   neighborhood: string;
@@ -25,5 +37,5 @@ export interface ParkingSpotWithPhotos extends ParkingSpot {
 
 // Campos que el propietario puede modificar de su parqueadero
 export type ParkingSpotChanges = Partial<
-  Pick<ParkingSpot, "title" | "neighborhood" | "address" | "pricePerHour">
+  Pick<ParkingSpot, "title" | "neighborhood" | "address" | "pricePerHour" | ParkingFeature>
 >;
