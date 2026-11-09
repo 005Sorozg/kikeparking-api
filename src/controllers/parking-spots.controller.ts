@@ -19,9 +19,34 @@ export class ParkingSpotsController {
       hasSecurity: req.query.hasSecurity === "true",
       hasCameras: req.query.hasCameras === "true",
       hasEvCharging: req.query.hasEvCharging === "true",
+      // El rectángulo del mapa solo se usa si llegan los 4 bordes
+      ...(req.query.minLat !== undefined &&
+        req.query.maxLat !== undefined &&
+        req.query.minLng !== undefined &&
+        req.query.maxLng !== undefined && {
+          area: {
+            minLat: Number(req.query.minLat),
+            maxLat: Number(req.query.maxLat),
+            minLng: Number(req.query.minLng),
+            maxLng: Number(req.query.maxLng),
+          },
+        }),
     };
 
     const result = await this.parkingSpotsService.getParkingSpots(filters);
+
+    res.status(200).json(result);
+  };
+
+  getNearbyParkingSpots = async (req: Request, res: Response): Promise<void> => {
+    // Si no mandan limit, se devuelven los 10 más cercanos
+    const limit = req.query.limit !== undefined ? Number(req.query.limit) : 10;
+
+    const result = await this.parkingSpotsService.getNearbyParkingSpots(
+      Number(req.query.lat),
+      Number(req.query.lng),
+      limit,
+    );
 
     res.status(200).json(result);
   };

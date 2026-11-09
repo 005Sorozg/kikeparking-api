@@ -19,6 +19,14 @@ router.get("/mine", requireAuth, requireRole("propietario"), async (req, res) =>
   return controller.getMyParkingSpots(req, res);
 });
 
+// Los más cercanos a un punto: /nearby?lat=6.24&lng=-75.58&limit=10 (público).
+// Va antes de "/:id" para que Express no confunda "nearby" con un id.
+router.get("/nearby", async (req, res) => {
+  const controller = container.resolve<ParkingSpotsController>("parkingSpotsController");
+
+  return controller.getNearbyParkingSpots(req, res);
+});
+
 // Reseñas de un parqueadero (públicas, como el detalle)
 router.get("/:id/reviews", async (req, res) => {
   const controller = container.resolve<ReviewsController>("reviewsController");

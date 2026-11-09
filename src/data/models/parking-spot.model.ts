@@ -17,6 +17,9 @@ export interface ParkingSpot extends ParkingFeatures {
   address: string;
   pricePerHour: number;
   available: boolean;
+  // null si el propietario todavía no marcó la ubicación en el mapa
+  latitude: number | null;
+  longitude: number | null;
   rating: number;
   reviewCount: number;
   ownerId: number;
@@ -37,5 +40,8 @@ export interface ParkingSpotWithPhotos extends ParkingSpot {
 
 // Campos que el propietario puede modificar de su parqueadero
 export type ParkingSpotChanges = Partial<
-  Pick<ParkingSpot, "title" | "neighborhood" | "address" | "pricePerHour" | ParkingFeature>
+  Pick<
+    ParkingSpot,
+    "title" | "neighborhood" | "address" | "pricePerHour" | "latitude" | "longitude" | ParkingFeature
+  >
 >;

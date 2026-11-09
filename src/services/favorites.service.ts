@@ -55,6 +55,8 @@ export class FavoritesService implements IFavoritesService {
       address: spot.address,
       pricePerHour: spot.pricePerHour,
       available: spot.available,
+      latitude: spot.latitude,
+      longitude: spot.longitude,
       acceptsCars: spot.acceptsCars,
       acceptsMotorcycles: spot.acceptsMotorcycles,
       covered: spot.covered,

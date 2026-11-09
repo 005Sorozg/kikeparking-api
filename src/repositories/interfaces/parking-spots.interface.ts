@@ -3,6 +3,8 @@ import { ParkingSpotsFilters } from "../../services/interfaces/parking-spots.int
 
 export interface IParkingSpotsRepository {
   getParkingSpotsByFilters(filters?: ParkingSpotsFilters): Promise<ParkingSpotWithPhotos[]>;
+  // Los que ya tienen ubicación en el mapa (para buscar los más cercanos)
+  getParkingSpotsWithLocation(): Promise<ParkingSpotWithPhotos[]>;
   getParkingSpotById(id: number): Promise<ParkingSpotWithPhotos | undefined>;
   createParkingSpot(data: Omit<ParkingSpot, "id">): Promise<ParkingSpotWithPhotos>;
   getParkingSpotsByOwner(ownerId: number): Promise<ParkingSpotWithPhotos[]>;

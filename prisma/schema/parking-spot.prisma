@@ -11,6 +11,9 @@ model ParkingSpot {
   hasSecurity        Boolean @default(false)
   hasCameras         Boolean @default(false)
   hasEvCharging      Boolean @default(false)
+  // Ubicación para el mapa (vacía en los parqueaderos creados antes del mapa)
+  latitude     Float?
+  longitude    Float?
   rating       Float    @default(0)
   reviewCount  Int      @default(0)
   createdAt    DateTime @default(now())

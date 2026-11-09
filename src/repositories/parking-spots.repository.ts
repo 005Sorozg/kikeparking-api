@@ -24,6 +24,11 @@ export class ParkingSpotsRepository implements IParkingSpotsRepository {
         ...(filters?.hasSecurity && { hasSecurity: true }),
         ...(filters?.hasCameras && { hasCameras: true }),
         ...(filters?.hasEvCharging && { hasEvCharging: true }),
+        // Rectángulo del mapa: latitud y longitud entre los bordes
+        ...(filters?.area && {
+          latitude: { gte: filters.area.minLat, lte: filters.area.maxLat },
+          longitude: { gte: filters.area.minLng, lte: filters.area.maxLng },
+        }),
       },
       orderBy:
         filters?.sort === "rating"
@@ -31,6 +36,13 @@ export class ParkingSpotsRepository implements IParkingSpotsRepository {
           : filters?.sort === "price"
             ? { pricePerHour: "asc" }
             : undefined,
+      include: withPhotos,
+    });
+  }
+
+  async getParkingSpotsWithLocation(): Promise<ParkingSpotWithPhotos[]> {
+    return prisma.parkingSpot.findMany({
+      where: { latitude: { not: null }, longitude: { not: null } },
       include: withPhotos,
     });
   }
