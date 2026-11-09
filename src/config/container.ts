@@ -22,6 +22,7 @@ import { SupportRequestsRepository } from "../repositories/support-requests.repo
 import { ReviewsController } from "../controllers/reviews.controller";
 import { ReviewsService } from "../services/reviews.service";
 import { ReviewsRepository } from "../repositories/reviews.repository";
+import { SimulatedPaymentGateway } from "../services/simulated-payment-gateway.service";
 
 // Modo CLASSIC: awilix inyecta según el nombre de cada parámetro del constructor
 export const container = createContainer({
@@ -59,4 +60,5 @@ container.register({
 
   // infrastructure
   imageStorage: asClass(CloudinaryImageStorage).scoped(),
+  paymentGateway: asClass(SimulatedPaymentGateway).scoped(),
 });

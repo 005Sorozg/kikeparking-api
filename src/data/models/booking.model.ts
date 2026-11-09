@@ -1,10 +1,17 @@
 export const VEHICLE_TYPES = ["carro", "moto"] as const;
 export type VehicleType = (typeof VEHICLE_TYPES)[number];
 
-export const BOOKING_STATUSES = ["confirmed", "cancelled"] as const;
+export const BOOKING_STATUSES = ["pending_payment", "confirmed", "cancelled"] as const;
 export type BookingStatus = (typeof BOOKING_STATUSES)[number];
 
-export const BOOKING_PHASES = ["upcoming", "in_progress", "completed", "cancelled"] as const;
+export const BOOKING_PHASES = [
+  "pending_payment",
+  "expired",
+  "upcoming",
+  "in_progress",
+  "completed",
+  "cancelled",
+] as const;
 export type BookingPhase = (typeof BOOKING_PHASES)[number];
 
 export interface Booking {
@@ -14,10 +21,21 @@ export interface Booking {
   endAt: Date;
   totalPrice: number;
   status: BookingStatus;
+  paymentDeadline: Date | null;
+  paidAt: Date | null;
+  cardBrand: string | null;
+  cardLast4: string | null;
+  refundedAt: Date | null;
   createdAt: Date;
   parkingSpotId: number;
   driverId: number;
 }
+
+// Lo que se necesita para crear una reserva (el estado y el pago los pone la base de datos)
+export type NewBooking = Pick<
+  Booking,
+  "vehicleType" | "startAt" | "endAt" | "totalPrice" | "paymentDeadline" | "parkingSpotId" | "driverId"
+>;
 
 // Rango de tiempo ocupado por una reserva (sin datos de quién reservó)
 export interface OccupiedSlot {

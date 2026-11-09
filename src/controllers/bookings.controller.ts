@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { CreateBookingRequestDTO } from "../dto/bookings.dto";
+import { CreateBookingRequestDTO, PayBookingRequestDTO } from "../dto/bookings.dto";
 import { IBookingsService } from "../services/interfaces/bookings.interface";
 
 export class BookingsController {
@@ -43,7 +43,16 @@ export class BookingsController {
   cancelBooking = async (req: Request, res: Response): Promise<void> => {
     const id = Number(req.params.id);
 
-    const result = await this.bookingsService.cancelBooking(id, req.user!.id);
+      const result = await this.bookingsService.cancelBooking(id, req.user!.id);
+
+    res.status(200).json(result);
+  };
+
+  payBooking = async (req: Request, res: Response): Promise<void> => {
+    const id = Number(req.params.id);
+    const body = req.body as PayBookingRequestDTO;
+
+    const result = await this.bookingsService.payBooking(id, body, req.user!.id);
 
     res.status(200).json(result);
   };

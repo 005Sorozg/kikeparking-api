@@ -6,8 +6,16 @@ model Booking {
   endAt         DateTime
   // Precio total en pesos, calculado por el servidor (horas x precio por hora)
   totalPrice    Int
-  // "confirmed" o "cancelled"
-  status        String      @default("confirmed")
+  // "pending_payment" (hora apartada mientras paga), "confirmed" (pagada) o "cancelled"
+  status        String      @default("pending_payment")
+  // Hasta cuándo se le aparta la hora al conductor para que pague
+  paymentDeadline DateTime?
+  // Pago simulado: solo se guarda la marca y los últimos 4 dígitos, nunca la tarjeta
+  paidAt        DateTime?
+  cardBrand     String?
+  cardLast4     String?
+  // Si se canceló después de pagar: cuándo se hizo el reembolso (simulado)
+  refundedAt    DateTime?
   createdAt     DateTime    @default(now())
   parkingSpotId Int
   parkingSpot   ParkingSpot @relation(fields: [parkingSpotId], references: [id])

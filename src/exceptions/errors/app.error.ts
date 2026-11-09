@@ -239,4 +239,28 @@ export const AppErrors = {
     message: "Este parqueadero no recibe ese tipo de vehículo",
     statusCode: 400,
   },
+
+  BOOKING_ALREADY_PAID: {
+    code: "BOOKING_ALREADY_PAID",
+    message: "Esta reserva ya está pagada",
+    statusCode: 409,
+  },
+
+  BOOKING_PAYMENT_EXPIRED: {
+    code: "BOOKING_PAYMENT_EXPIRED",
+    message: "Se acabó el tiempo para pagar esta reserva. Vuelve a reservar",
+    statusCode: 409,
+  },
+
+  PAYMENT_INVALID_CARD: {
+    code: "PAYMENT_INVALID_CARD",
+    message: "Los datos de la tarjeta no son válidos",
+    statusCode: 400,
+  },
+
+  PAYMENT_DECLINED: {
+    code: "PAYMENT_DECLINED",
+    message: "El pago fue rechazado",
+    statusCode: 402,
+  },
 };

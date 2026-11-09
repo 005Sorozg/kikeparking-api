@@ -11,6 +11,16 @@ export interface CreateBookingRequestDTO {
   hours: number;
 }
 
+// Datos de la tarjeta para pagar una reserva (pago simulado: nada se guarda completo)
+export interface PayBookingRequestDTO {
+  // Se aceptan espacios o guiones: "4242 4242 4242 4242"
+  cardNumber: string;
+  // "MM/AA", ej: "08/28"
+  expiry: string;
+  cvc: string;
+  holderName: string;
+}
+
 // Horario ocupado de un parqueadero: solo el rango, sin datos del conductor
 export interface OccupiedSlotResponseDTO {
   startAt: string;
@@ -26,8 +36,15 @@ export interface BookingResponseDTO {
   hours: number;
   totalPrice: number;
   status: BookingStatus;
-  // "upcoming" (próxima), "in_progress" (en curso), "completed" (completada) o "cancelled"
+  // "pending_payment" (falta pagar), "expired" (no pagó a tiempo), "upcoming" (próxima),
+  // "in_progress" (en curso), "completed" (completada) o "cancelled"
   phase: BookingPhase;
+  // Hasta cuándo puede pagar (solo mientras está pendiente de pago)
+  paymentDeadline: string | null;
+  // Con qué se pagó, o null si aún no se ha pagado
+  payment: { brand: string; last4: string; paidAt: string } | null;
+  // true si se canceló después de pagar y se devolvió el dinero
+  refunded: boolean;
   createdAt: string;
   parkingSpot: {
     id: number;
