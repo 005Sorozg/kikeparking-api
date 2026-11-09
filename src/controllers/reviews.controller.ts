@@ -18,4 +18,11 @@ export class ReviewsController {
 
     res.status(200).json(result);
   };
+
+  getMyRating = async (req: Request, res: Response): Promise<void> => {
+    // El id y el rol salen del token: cada uno solo ve su propia calificación
+    const result = await this.reviewsService.getMyRating(req.user!.id, req.user!.role);
+
+    res.status(200).json(result);
+  };
 }
