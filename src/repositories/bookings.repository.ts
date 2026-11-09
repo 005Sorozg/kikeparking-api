@@ -1,4 +1,4 @@
-import { Booking, BookingWithDetails, OccupiedSlot } from "../data/models/booking.model";
+import { NewBooking, BookingWithDetails, OccupiedSlot } from "../data/models/booking.model";
 import { prisma } from "../config/prisma";
 import { IBookingsRepository } from "./interfaces/bookings.interface";
 
@@ -21,9 +21,15 @@ const DETAILS = {
 
 const MAX_ATTEMPTS = 3;
 
+// Reservas que ocupan el horario: las pagadas y las que se están pagando (aún en tiempo).
+// Una pendiente cuyo plazo ya venció deja la hora libre sin que nadie tenga que borrarla.
+const holdsTheSlot = (now: Date) => ({
+  OR: [{ status: "confirmed" }, { status: "pending_payment", paymentDeadline: { gt: now } }],
+});
+
 export class BookingsRepository implements IBookingsRepository {
   async createBookingIfFree(
-    data: Omit<Booking, "id" | "createdAt" | "status">,
+    data: NewBooking,
   ): Promise<BookingWithDetails | undefined> {
     // Si dos reservas llegan al mismo tiempo, Postgres aborta una de las transacciones
     // (código P2034). Se reintenta: en el reintento ya verá la otra reserva y responderá 409.
@@ -41,7 +47,7 @@ export class BookingsRepository implements IBookingsRepository {
   }
 
   private async tryCreateBooking(
-    data: Omit<Booking, "id" | "createdAt" | "status">,
+    data: NewBooking,
   ): Promise<BookingWithDetails | undefined> {
     // Revisar y crear dentro de una misma transacción "Serializable" evita que dos
     // conductores reserven el mismo horario al mismo tiempo
@@ -51,7 +57,7 @@ export class BookingsRepository implements IBookingsRepository {
         const overlapping = await tx.booking.findFirst({
           where: {
             parkingSpotId: data.parkingSpotId,
-            status: "confirmed",
+            ...holdsTheSlot(new Date()),
             startAt: { lt: data.endAt },
             endAt: { gt: data.startAt },
           },
@@ -85,7 +91,7 @@ export class BookingsRepository implements IBookingsRepository {
     return bookings as BookingWithDetails[];
   }
 
-    async getBookingsByOwner(ownerId: number, parkingSpotId?: number): Promise<BookingWithDetails[]> {
+  async getBookingsByOwner(ownerId: number, parkingSpotId?: number): Promise<BookingWithDetails[]> {
     // Reservas hechas en los parqueaderos de este propietario (o solo en uno de ellos)
     const bookings = await prisma.booking.findMany({
       where: {
@@ -99,19 +105,36 @@ export class BookingsRepository implements IBookingsRepository {
     return bookings as BookingWithDetails[];
   }
 
-  async cancelBooking(id: number): Promise<BookingWithDetails> {
+  async cancelBooking(id: number, refunded: boolean): Promise<BookingWithDetails> {
     const booking = await prisma.booking.update({
       where: { id },
-      data: { status: "cancelled" },
+      data: { status: "cancelled", ...(refunded && { refundedAt: new Date() }) },
       include: DETAILS,
     });
 
     return booking as BookingWithDetails;
   }
 
+  async markAsPaid(
+    id: number,
+    payment: { cardBrand: string; cardLast4: string },
+  ): Promise<BookingWithDetails | undefined> {
+    // updateMany deja poner condiciones extra: si justo se venció el plazo, no actualiza nada
+    const { count } = await prisma.booking.updateMany({
+      where: { id, status: "pending_payment", paymentDeadline: { gt: new Date() } },
+      data: { status: "confirmed", paidAt: new Date(), ...payment },
+    });
+
+    if (count === 0) {
+      return undefined;
+    }
+
+    return this.getBookingById(id);
+  }
+
   async getOccupiedSlots(parkingSpotId: number, from: Date): Promise<OccupiedSlot[]> {
     return prisma.booking.findMany({
-      where: { parkingSpotId, status: "confirmed", endAt: { gt: from } },
+      where: { parkingSpotId, ...holdsTheSlot(new Date()), endAt: { gt: from } },
       select: { startAt: true, endAt: true },
       orderBy: { startAt: "asc" },
     });

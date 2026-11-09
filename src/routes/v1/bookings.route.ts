@@ -44,6 +44,13 @@ router.patch("/:id/cancel", async (req, res) => {
   return controller.cancelBooking(req, res);
 });
 
+// Pagar una reserva pendiente (pasarela simulada): solo el conductor que la hizo
+router.post("/:id/pay", requireRole("conductor"), async (req, res) => {
+  const controller = container.resolve<BookingsController>("bookingsController");
+
+  return controller.payBooking(req, res);
+});
+
 // Calificar una reserva completada: el conductor califica el parqueadero
 // y el propietario califica al conductor (lo decide el servicio según quién envía)
 router.post("/:id/review", async (req, res) => {
