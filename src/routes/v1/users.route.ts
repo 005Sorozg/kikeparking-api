@@ -3,6 +3,7 @@ import { container } from "../../config/container";
 import { UsersController } from "../../controllers/users.controller";
 import { requireAuth } from "../../middlewares/auth.middleware";
 import { uploadSingleImage } from "../../middlewares/upload.middleware";
+import { ReviewsController } from "../../controllers/reviews.controller";
 
 const router = Router();
 
@@ -22,6 +23,13 @@ router.get("/", async (req, res) => {
   const controller = container.resolve<UsersController>("usersController");
 
   return controller.getAll(req, res);
+});
+
+// Calificación del usuario que inició sesión (conductor o propietario)
+router.get("/me/rating", requireAuth, async (req, res) => {
+  const controller = container.resolve<ReviewsController>("reviewsController");
+
+  return controller.getMyRating(req, res);
 });
 
 // Foto de perfil del usuario que inició sesión (cualquier rol)

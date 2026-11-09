@@ -1,5 +1,5 @@
 import { ReviewTarget, ReviewWithAuthor } from "../data/models/review.model";
-import { CreateReviewRequestDTO, ReviewResponseDTO } from "../dto/reviews.dto";
+import { CreateReviewRequestDTO, RatingSummaryResponseDTO, ReviewResponseDTO } from "../dto/reviews.dto";
 import { AppException } from "../exceptions/app.exception";
 import { AppErrors } from "../exceptions/errors/app.error";
 import { IBookingsRepository } from "../repositories/interfaces/bookings.interface";
@@ -99,6 +99,13 @@ export class ReviewsService implements IReviewsService {
     const reviews = await this.reviewsRepository.getParkingSpotReviews(parkingSpotId);
 
     return reviews.map((review) => this.toResponseDTO(review));
+  }
+  
+  // Conductor: lo que le han dado los propietarios. Propietario: el promedio de sus parqueaderos.
+  async getMyRating(userId: number, role: string): Promise<RatingSummaryResponseDTO> {
+    return role === "propietario"
+      ? this.reviewsRepository.getOwnerRatingSummary(userId)
+      : this.reviewsRepository.getDriverRatingSummary(userId);
   }
 
   // Lanza el error del catálogo; "never" le dice a TypeScript que aquí se corta el flujo

@@ -56,7 +56,29 @@ export class ReviewsRepository implements IReviewsRepository {
       include: { author: { select: { name: true, avatarUrl: true } } },
     });
 
-    return reviews.map((review) => ({ ...review, target: review.target as ReviewTarget }));
+     return reviews.map((review) => ({ ...review, target: review.target as ReviewTarget }));
+  }
+
+  async getDriverRatingSummary(driverId: number): Promise<{ rating: number; reviewCount: number }> {
+    const stats = await prisma.review.aggregate({
+      where: { driverId, target: "driver" },
+      _avg: { rating: true },
+      _count: true,
+    });
+
+    return { rating: roundRating(stats._avg.rating), reviewCount: stats._count };
+  }
+
+  async getOwnerRatingSummary(ownerId: number): Promise<{ rating: number; reviewCount: number }> {
+    // Todas las reseñas de parqueaderos cuyo dueño es este propietario. Así cada reseña pesa
+    // lo mismo: un parqueadero con 10 reseñas cuenta más que uno con 1.
+    const stats = await prisma.review.aggregate({
+      where: { target: "parking_spot", parkingSpot: { ownerId } },
+      _avg: { rating: true },
+      _count: true,
+    });
+
+    return { rating: roundRating(stats._avg.rating), reviewCount: stats._count };
   }
 }
 
