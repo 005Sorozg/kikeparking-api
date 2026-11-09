@@ -7,6 +7,8 @@ export interface IConversationsRepository {
   getParticipant(conversationId: number, userId: number): Promise<ConversationParticipant | undefined>;
   // Chats visibles para el usuario (no eliminados), archivados o no, del más reciente al más antiguo
   getConversations(userId: number, archived: boolean): Promise<ConversationListItem[]>;
+  // Total de mensajes sin leer del usuario, sumando todos sus chats visibles
+  countUnread(userId: number): Promise<number>;
   // Mensajes del chat posteriores a "afterId" y a "since" (la fecha en que lo eliminó, si lo hizo)
   getMessages(conversationId: number, afterId?: number, since?: Date | null): Promise<Message[]>;
   // Guarda el mensaje y hace que el chat vuelva a aparecer para la otra persona

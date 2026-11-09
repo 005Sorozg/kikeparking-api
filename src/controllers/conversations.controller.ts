@@ -26,6 +26,12 @@ export class ConversationsController {
     res.status(200).json(result);
   };
 
+  getUnreadCount = async (req: Request, res: Response): Promise<void> => {
+    const count = await this.conversationsService.getUnreadCount(req.user!.id);
+
+    res.status(200).json({ count });
+  };
+
   getMessages = async (req: Request, res: Response): Promise<void> => {
     // ?after=15 devuelve solo los mensajes con id mayor a 15 (los nuevos)
     const afterId = req.query.after !== undefined ? Number(req.query.after) : undefined;
