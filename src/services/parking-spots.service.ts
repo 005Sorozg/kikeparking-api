@@ -6,12 +6,19 @@ import { AppErrors } from "../exceptions/errors/app.error";
 import { IParkingSpotsRepository } from "../repositories/interfaces/parking-spots.interface";
 import {
   IParkingSpotsService,
+  MapArea,
   PARKING_SORT_OPTIONS,
   ParkingSpotsFilters,
 } from "./interfaces/parking-spots.interface";
 
 // Cantidad máxima de fotos por parqueadero
 const MAX_PHOTOS_PER_SPOT = 5;
+
+// Radio de la Tierra en km (para calcular distancias entre dos puntos del mapa)
+const EARTH_RADIUS_KM = 6371;
+
+// Cuántos parqueaderos cercanos se pueden pedir como máximo
+const MAX_NEARBY = 50;
 
 export class ParkingSpotsService implements IParkingSpotsService {
     constructor(
@@ -33,9 +40,45 @@ export class ParkingSpotsService implements IParkingSpotsService {
       throw new AppException(error.code, error.message, error.statusCode);
     }
 
+      if (filters?.area && !this.isValidArea(filters.area)) {
+      const error = AppErrors.PARKING_INVALID_DATA;
+
+      throw new AppException(
+        error.code,
+        `${error.message}: minLat, maxLat, minLng y maxLng deben ser coordenadas válidas`,
+        error.statusCode,
+      );
+    }
+
     const spots = await this.parkingSpotsRepository.getParkingSpotsByFilters(filters);
 
     return spots.map((spot) => this.toResponseDTO(spot));
+  }
+
+  // Los parqueaderos más cercanos a un punto (el conductor), del más cerca al más lejos
+  async getNearbyParkingSpots(lat: number, lng: number, limit: number): Promise<ParkingSpotResponseDTO[]> {
+    if (!this.isValidLocation(lat, lng)) {
+      const error = AppErrors.PARKING_INVALID_DATA;
+
+      throw new AppException(error.code, `${error.message}: lat y lng deben ser coordenadas válidas`, error.statusCode);
+    }
+
+    if (!Number.isInteger(limit) || limit < 1 || limit > MAX_NEARBY) {
+      const error = AppErrors.PARKING_INVALID_DATA;
+
+      throw new AppException(error.code, `${error.message}: limit debe estar entre 1 y ${MAX_NEARBY}`, error.statusCode);
+    }
+
+    const spots = await this.parkingSpotsRepository.getParkingSpotsWithLocation();
+
+    return spots
+      .map((spot) => ({
+        ...this.toResponseDTO(spot),
+        distanceKm: this.distanceKm(lat, lng, spot.latitude!, spot.longitude!),
+      }))
+      .sort((a, b) => a.distanceKm - b.distanceKm)
+      .slice(0, limit)
+      .map((spot) => ({ ...spot, distanceKm: Math.round(spot.distanceKm * 100) / 100 }));
   }
 
   async getParkingSpotById(id: number): Promise<ParkingSpotResponseDTO> {
@@ -80,6 +123,8 @@ export class ParkingSpotsService implements IParkingSpotsService {
       hasSecurity: data.hasSecurity ?? false,
       hasCameras: data.hasCameras ?? false,
       hasEvCharging: data.hasEvCharging ?? false,
+      latitude: data.latitude ?? null,
+      longitude: data.longitude ?? null,
       rating: 0,
       reviewCount: 0,
       ownerId: ownerId,
@@ -240,11 +285,62 @@ export class ParkingSpotsService implements IParkingSpotsService {
 
     problems.push(...this.validateFeatures(data));
 
-    if (data?.acceptsCars === false && data?.acceptsMotorcycles === false) {
+      if (data?.acceptsCars === false && data?.acceptsMotorcycles === false) {
       problems.push("el parqueadero debe aceptar carros, motos o ambos");
     }
 
+    problems.push(...this.validateLocationData(data));
+
     return problems;
+  }
+
+  // La ubicación es opcional, pero latitud y longitud van juntas y deben ser coordenadas reales
+  private validateLocationData(data: { latitude?: number; longitude?: number } | undefined): string[] {
+    if (data?.latitude === undefined && data?.longitude === undefined) {
+      return [];
+    }
+
+    if (!this.isValidLocation(data?.latitude, data?.longitude)) {
+      return ["latitude (entre -90 y 90) y longitude (entre -180 y 180) deben enviarse juntas"];
+    }
+
+    return [];
+  }
+
+  private isValidLocation(lat: unknown, lng: unknown): boolean {
+    return (
+      typeof lat === "number" &&
+      typeof lng === "number" &&
+      Number.isFinite(lat) &&
+      Number.isFinite(lng) &&
+      lat >= -90 &&
+      lat <= 90 &&
+      lng >= -180 &&
+      lng <= 180
+    );
+  }
+
+  // Los bordes deben ser coordenadas válidas y el mínimo no puede pasar al máximo
+  private isValidArea(area: MapArea): boolean {
+    return (
+      this.isValidLocation(area.minLat, area.minLng) &&
+      this.isValidLocation(area.maxLat, area.maxLng) &&
+      area.minLat <= area.maxLat &&
+      area.minLng <= area.maxLng
+    );
+  }
+
+  // Fórmula de Haversine: distancia en km entre dos puntos, teniendo en cuenta que la Tierra es redonda
+  private distanceKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+    const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
+    const dLat = toRadians(lat2 - lat1);
+    const dLng = toRadians(lng2 - lng1);
+
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) * Math.sin(dLng / 2) ** 2;
+
+    return 2 * EARTH_RADIUS_KM * Math.asin(Math.sqrt(a));
   }
 
   // Las características son opcionales, pero si llegan deben ser true o false
@@ -295,6 +391,7 @@ export class ParkingSpotsService implements IParkingSpotsService {
       ...(data.neighborhood !== undefined && { neighborhood: data.neighborhood.trim() }),
       ...(data.address !== undefined && { address: data.address.trim() }),
       ...(data.pricePerHour !== undefined && { pricePerHour: data.pricePerHour }),
+      ...(data.latitude !== undefined && { latitude: data.latitude, longitude: data.longitude }),
       // Características: solo las que llegaron
       ...Object.fromEntries(
         PARKING_FEATURES.filter((feature) => data[feature] !== undefined).map((feature) => [
@@ -326,7 +423,15 @@ export class ParkingSpotsService implements IParkingSpotsService {
   // Valida solo los campos que llegaron, y exige que llegue al menos uno
   private validateUpdateData(data: UpdateParkingSpotRequestDTO): string[] {
     const problems: string[] = [];
-    const fields = ["title", "neighborhood", "address", "pricePerHour", ...PARKING_FEATURES] as const;
+    const fields = [
+      "title",
+      "neighborhood",
+      "address",
+      "pricePerHour",
+      "latitude",
+      "longitude",
+      ...PARKING_FEATURES,
+    ] as const;
 
     if (!fields.some((field) => data?.[field] !== undefined)) {
       problems.push("debes enviar al menos un campo para modificar");
@@ -351,6 +456,7 @@ export class ParkingSpotsService implements IParkingSpotsService {
     }
 
     problems.push(...this.validateFeatures(data));
+    problems.push(...this.validateLocationData(data));
 
     return problems;
   }
@@ -365,6 +471,8 @@ export class ParkingSpotsService implements IParkingSpotsService {
       address: spot.address,
       pricePerHour: spot.pricePerHour,
       available: spot.available,
+      latitude: spot.latitude,
+      longitude: spot.longitude,
       acceptsCars: spot.acceptsCars,
       acceptsMotorcycles: spot.acceptsMotorcycles,
       covered: spot.covered,

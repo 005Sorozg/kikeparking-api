@@ -16,10 +16,20 @@ export interface ParkingSpotsFilters {
   hasSecurity?: boolean;
   hasCameras?: boolean;
   hasEvCharging?: boolean;
+  // Solo los que estén dentro de este rectángulo del mapa (lo que se ve en pantalla)
+  area?: MapArea;
+}
+
+export interface MapArea {
+  minLat: number;
+  maxLat: number;
+  minLng: number;
+  maxLng: number;
 }
 
 export interface IParkingSpotsService {
   getParkingSpots(filters?: ParkingSpotsFilters): Promise<ParkingSpotResponseDTO[]>;
+  getNearbyParkingSpots(lat: number, lng: number, limit: number): Promise<ParkingSpotResponseDTO[]>;
   getParkingSpotById(id: number): Promise<ParkingSpotResponseDTO>;
   createParkingSpot(data: CreateParkingSpotRequestDTO, ownerId: number): Promise<ParkingSpotResponseDTO>;
   getMyParkingSpots(ownerId: number): Promise<ParkingSpotResponseDTO[]>;
