@@ -22,6 +22,13 @@ router.get("/", async (req, res) => {
   return controller.getConversations(req, res);
 });
 
+// Total de mensajes sin leer (para el número rojo de la pestaña Mensajes)
+router.get("/unread-count", async (req, res) => {
+  const controller = container.resolve<ConversationsController>("conversationsController");
+
+  return controller.getUnreadCount(req, res);
+});
+
 // Mensajes de un chat (?after=id para traer solo los nuevos)
 router.get("/:id/messages", async (req, res) => {
   const controller = container.resolve<ConversationsController>("conversationsController");

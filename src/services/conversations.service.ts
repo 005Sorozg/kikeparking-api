@@ -59,6 +59,11 @@ export class ConversationsService implements IConversationsService {
     return items.map((item) => this.toConversationDTO(item, userId));
   }
 
+  // Para el número rojo de la pestaña Mensajes
+  async getUnreadCount(userId: number): Promise<number> {
+    return this.conversationsRepository.countUnread(userId);
+  }
+
   // Mensajes del chat. Con afterId solo llegan los nuevos (la app pregunta cada pocos segundos)
   async getMessages(conversationId: number, userId: number, afterId?: number): Promise<MessageResponseDTO[]> {
     const participant = await this.getOwnParticipant(conversationId, userId);

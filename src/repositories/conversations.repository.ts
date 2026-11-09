@@ -84,6 +84,22 @@ export class ConversationsRepository implements IConversationsRepository {
     );
   }
 
+  async countUnread(userId: number): Promise<number> {
+    // Se compara cada mensaje con la fecha de lectura de SU fila de participante, así que
+    // se hace en SQL: Prisma no permite comparar dos columnas de tablas distintas en un filtro.
+    const [row] = await prisma.$queryRaw<{ total: number }[]>`
+      SELECT COUNT(*)::int AS total
+      FROM "messages" m
+      JOIN "conversation_participants" p
+        ON p."conversationId" = m."conversationId" AND p."userId" = ${userId}
+      WHERE m."senderId" <> ${userId}
+        AND p."deleted" = false
+        AND m."createdAt" > GREATEST(p."lastReadAt", COALESCE(p."clearedAt", p."lastReadAt"))
+    `;
+
+    return row?.total ?? 0;
+  }
+
   async getMessages(conversationId: number, afterId?: number, since?: Date | null): Promise<Message[]> {
     return prisma.message.findMany({
       where: {
