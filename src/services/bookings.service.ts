@@ -1,4 +1,4 @@
-import { BookingWithDetails, VEHICLE_TYPES } from "../data/models/booking.model";
+import { BookingWithDetails, VEHICLE_TYPES, BookingPhase } from "../data/models/booking.model";
 import { BookingResponseDTO, CreateBookingRequestDTO, OccupiedSlotResponseDTO } from "../dto/bookings.dto";
 import { AppException } from "../exceptions/app.exception";
 import { AppErrors } from "../exceptions/errors/app.error";
@@ -176,6 +176,18 @@ export class BookingsService implements IBookingsService {
     throw new AppException(error.code, message, error.statusCode);
   }
 
+  // Próxima, en curso o completada según la hora actual; la cancelación manda sobre todo
+  private getPhase(booking: BookingWithDetails): BookingPhase {
+    if (booking.status === "cancelled") return "cancelled";
+
+    const now = Date.now();
+
+    if (now < booking.startAt.getTime()) return "upcoming";
+    if (now < booking.endAt.getTime()) return "in_progress";
+
+    return "completed";
+  }
+
   // Convierte el modelo interno al formato que se devuelve al cliente
   private toResponseDTO(booking: BookingWithDetails): BookingResponseDTO {
     return {
@@ -186,6 +198,7 @@ export class BookingsService implements IBookingsService {
       hours: Math.round((booking.endAt.getTime() - booking.startAt.getTime()) / HOUR_MS),
       totalPrice: booking.totalPrice,
       status: booking.status,
+      phase: this.getPhase(booking),
       createdAt: booking.createdAt.toISOString(),
       parkingSpot: {
         id: booking.parkingSpot.id,

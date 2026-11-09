@@ -4,6 +4,9 @@ export type VehicleType = (typeof VEHICLE_TYPES)[number];
 export const BOOKING_STATUSES = ["confirmed", "cancelled"] as const;
 export type BookingStatus = (typeof BOOKING_STATUSES)[number];
 
+export const BOOKING_PHASES = ["upcoming", "in_progress", "completed", "cancelled"] as const;
+export type BookingPhase = (typeof BOOKING_PHASES)[number];
+
 export interface Booking {
   id: number;
   vehicleType: VehicleType;

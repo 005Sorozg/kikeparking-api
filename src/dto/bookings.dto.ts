@@ -1,4 +1,4 @@
-import { BookingStatus, VehicleType } from "../data/models/booking.model";
+import { BookingPhase, BookingStatus, VehicleType } from "../data/models/booking.model";
 
 // Datos que el conductor envía para reservar.
 // El precio y la hora de salida NO los manda el cliente: los calcula el servidor.
@@ -26,6 +26,8 @@ export interface BookingResponseDTO {
   hours: number;
   totalPrice: number;
   status: BookingStatus;
+  // "upcoming" (próxima), "in_progress" (en curso), "completed" (completada) o "cancelled"
+  phase: BookingPhase;
   createdAt: string;
   parkingSpot: {
     id: number;
