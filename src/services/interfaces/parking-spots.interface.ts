@@ -9,6 +9,13 @@ export interface ParkingSpotsFilters {
   search?: string;
   onlyAvailable?: boolean;
   sort?: ParkingSpotsSort;
+  // Solo parqueaderos que acepten este vehículo
+  vehicle?: "carro" | "moto";
+  // Cada uno en true deja solo los que tienen esa característica
+  covered?: boolean;
+  hasSecurity?: boolean;
+  hasCameras?: boolean;
+  hasEvCharging?: boolean;
 }
 
 export interface IParkingSpotsService {

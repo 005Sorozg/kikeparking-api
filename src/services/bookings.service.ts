@@ -37,6 +37,14 @@ export class BookingsService implements IBookingsService {
       this.fail(AppErrors.BOOKING_SPOT_UNAVAILABLE);
     }
 
+    // El parqueadero debe aceptar el vehículo elegido
+    if (
+      (data.vehicleType === "carro" && !spot.acceptsCars) ||
+      (data.vehicleType === "moto" && !spot.acceptsMotorcycles)
+    ) {
+      this.fail(AppErrors.BOOKING_VEHICLE_NOT_ACCEPTED);
+    }
+
     if (spot.ownerId === driverId) {
       this.fail(AppErrors.BOOKING_OWN_SPOT);
     }

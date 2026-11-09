@@ -5,6 +5,12 @@ model ParkingSpot {
   address      String
   pricePerHour Int
   available    Boolean  @default(true)
+  acceptsCars        Boolean @default(true)
+  acceptsMotorcycles Boolean @default(true)
+  covered            Boolean @default(false)
+  hasSecurity        Boolean @default(false)
+  hasCameras         Boolean @default(false)
+  hasEvCharging      Boolean @default(false)
   rating       Float    @default(0)
   reviewCount  Int      @default(0)
   createdAt    DateTime @default(now())

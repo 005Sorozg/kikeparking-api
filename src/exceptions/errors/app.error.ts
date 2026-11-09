@@ -233,4 +233,10 @@ export const AppErrors = {
     message: "Ya calificaste esta reserva",
     statusCode: 409,
   },
+
+  BOOKING_VEHICLE_NOT_ACCEPTED: {
+    code: "BOOKING_VEHICLE_NOT_ACCEPTED",
+    message: "Este parqueadero no recibe ese tipo de vehículo",
+    statusCode: 400,
+  },
 };

@@ -1,4 +1,4 @@
-import { ParkingSpotChanges, ParkingSpotWithPhotos } from "../data/models/parking-spot.model";
+import { ParkingSpotChanges, ParkingSpotWithPhotos, PARKING_FEATURES, ParkingFeatures } from "../data/models/parking-spot.model";
 import { IImageStorage, UploadedFileData } from "./interfaces/image-storage.interface";
 import { CreateParkingSpotRequestDTO, ParkingSpotResponseDTO, UpdateAvailabilityRequestDTO, UpdateParkingSpotRequestDTO } from "../dto/parking-spots.dto";
 import { AppException } from "../exceptions/app.exception";
@@ -21,6 +21,12 @@ export class ParkingSpotsService implements IParkingSpotsService {
 
   async getParkingSpots(filters?: ParkingSpotsFilters): Promise<ParkingSpotResponseDTO[]> {
     // El valor llega del query string, así que se valida en tiempo de ejecución
+    if (filters?.vehicle !== undefined && filters.vehicle !== "carro" && filters.vehicle !== "moto") {
+      const error = AppErrors.PARKING_INVALID_DATA;
+
+      throw new AppException(error.code, `${error.message}: vehicle debe ser carro o moto`, error.statusCode);
+    }
+
     if (filters?.sort && !(PARKING_SORT_OPTIONS as readonly string[]).includes(filters.sort)) {
       const error = AppErrors.PARKING_INVALID_SORT;
 
@@ -60,7 +66,6 @@ export class ParkingSpotsService implements IParkingSpotsService {
       throw new AppException(error.code, `${error.message}: ${problems.join(", ")}`, error.statusCode);
     }
 
-
     // Todo parqueadero nuevo nace disponible y sin calificación
     const spot = await this.parkingSpotsRepository.createParkingSpot({
       title: data.title.trim(),
@@ -68,6 +73,13 @@ export class ParkingSpotsService implements IParkingSpotsService {
       address: data.address.trim(),
       pricePerHour: data.pricePerHour,
       available: true,
+      // Si no se envían: acepta carros y motos, y no tiene las demás características
+      acceptsCars: data.acceptsCars ?? true,
+      acceptsMotorcycles: data.acceptsMotorcycles ?? true,
+      covered: data.covered ?? false,
+      hasSecurity: data.hasSecurity ?? false,
+      hasCameras: data.hasCameras ?? false,
+      hasEvCharging: data.hasEvCharging ?? false,
       rating: 0,
       reviewCount: 0,
       ownerId: ownerId,
@@ -82,8 +94,8 @@ export class ParkingSpotsService implements IParkingSpotsService {
     return spots.map((spot) => this.toResponseDTO(spot));
   }
 
-      // Pausar (available: false) o reactivar (available: true) un parqueadero.
-    // Pausado no recibe reservas nuevas; las que ya tenía se mantienen.
+  // Pausar (available: false) o reactivar (available: true) un parqueadero.
+  // Pausado no recibe reservas nuevas; las que ya tenía se mantienen.
   async updateAvailability(
     id: number,
     data: UpdateAvailabilityRequestDTO,
@@ -121,7 +133,7 @@ export class ParkingSpotsService implements IParkingSpotsService {
     return this.toResponseDTO(updated);
   }
 
-    // Agrega una foto al parqueadero (máximo 5). Solo el dueño puede hacerlo.
+  // Agrega una foto al parqueadero (máximo 5). Solo el dueño puede hacerlo.
   async addPhoto(id: number, file: UploadedFileData | undefined, ownerId: number): Promise<ParkingSpotResponseDTO> {
     const spot = await this.getOwnedSpot(id, ownerId);
 
@@ -226,10 +238,23 @@ export class ParkingSpotsService implements IParkingSpotsService {
       problems.push("pricePerHour debe ser un número entero mayor que 0");
     }
 
+    problems.push(...this.validateFeatures(data));
+
+    if (data?.acceptsCars === false && data?.acceptsMotorcycles === false) {
+      problems.push("el parqueadero debe aceptar carros, motos o ambos");
+    }
+
     return problems;
   }
 
-    // Edición parcial: el propietario envía solo los campos que quiere cambiar
+  // Las características son opcionales, pero si llegan deben ser true o false
+  private validateFeatures(data: Partial<ParkingFeatures> | undefined): string[] {
+    return PARKING_FEATURES.filter(
+      (feature) => data?.[feature] !== undefined && typeof data[feature] !== "boolean",
+    ).map((feature) => `${feature} debe ser true o false`);
+  }
+
+  // Edición parcial: el propietario envía solo los campos que quiere cambiar
   async updateParkingSpot(
     id: number,
     data: UpdateParkingSpotRequestDTO,
@@ -270,7 +295,28 @@ export class ParkingSpotsService implements IParkingSpotsService {
       ...(data.neighborhood !== undefined && { neighborhood: data.neighborhood.trim() }),
       ...(data.address !== undefined && { address: data.address.trim() }),
       ...(data.pricePerHour !== undefined && { pricePerHour: data.pricePerHour }),
+      // Características: solo las que llegaron
+      ...Object.fromEntries(
+        PARKING_FEATURES.filter((feature) => data[feature] !== undefined).map((feature) => [
+          feature,
+          data[feature],
+        ]),
+      ),
     };
+
+    // Después del cambio debe seguir aceptando al menos un tipo de vehículo
+    const acceptsCars = changes.acceptsCars ?? spot.acceptsCars;
+    const acceptsMotorcycles = changes.acceptsMotorcycles ?? spot.acceptsMotorcycles;
+
+    if (!acceptsCars && !acceptsMotorcycles) {
+      const error = AppErrors.PARKING_INVALID_DATA;
+
+      throw new AppException(
+        error.code,
+        `${error.message}: el parqueadero debe aceptar carros, motos o ambos`,
+        error.statusCode,
+      );
+    }
 
     const updated = await this.parkingSpotsRepository.updateParkingSpot(id, changes);
 
@@ -280,7 +326,7 @@ export class ParkingSpotsService implements IParkingSpotsService {
   // Valida solo los campos que llegaron, y exige que llegue al menos uno
   private validateUpdateData(data: UpdateParkingSpotRequestDTO): string[] {
     const problems: string[] = [];
-    const fields = ["title", "neighborhood", "address", "pricePerHour"] as const;
+    const fields = ["title", "neighborhood", "address", "pricePerHour", ...PARKING_FEATURES] as const;
 
     if (!fields.some((field) => data?.[field] !== undefined)) {
       problems.push("debes enviar al menos un campo para modificar");
@@ -304,11 +350,13 @@ export class ParkingSpotsService implements IParkingSpotsService {
       problems.push("pricePerHour debe ser un número entero mayor que 0");
     }
 
+    problems.push(...this.validateFeatures(data));
+
     return problems;
   }
 
   // Convierte el modelo interno al formato que se devuelve al cliente
-    // Convierte el modelo interno al formato que se devuelve al cliente
+  // Convierte el modelo interno al formato que se devuelve al cliente
   private toResponseDTO(spot: ParkingSpotWithPhotos): ParkingSpotResponseDTO {
     return {
       id: spot.id,
@@ -317,6 +365,12 @@ export class ParkingSpotsService implements IParkingSpotsService {
       address: spot.address,
       pricePerHour: spot.pricePerHour,
       available: spot.available,
+      acceptsCars: spot.acceptsCars,
+      acceptsMotorcycles: spot.acceptsMotorcycles,
+      covered: spot.covered,
+      hasSecurity: spot.hasSecurity,
+      hasCameras: spot.hasCameras,
+      hasEvCharging: spot.hasEvCharging,
       rating: spot.rating,
       reviewCount: spot.reviewCount,
       ownerId: spot.ownerId,
