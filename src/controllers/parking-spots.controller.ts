@@ -7,7 +7,7 @@ import {
 } from "../services/interfaces/parking-spots.interface";
 
 export class ParkingSpotsController {
-  constructor(readonly parkingSpotsService: IParkingSpotsService) {}
+  constructor(readonly parkingSpotsService: IParkingSpotsService) { }
 
   getParkingSpots = async (req: Request, res: Response): Promise<void> => {
     const filters: ParkingSpotsFilters = {
@@ -24,13 +24,13 @@ export class ParkingSpotsController {
         req.query.maxLat !== undefined &&
         req.query.minLng !== undefined &&
         req.query.maxLng !== undefined && {
-          area: {
-            minLat: Number(req.query.minLat),
-            maxLat: Number(req.query.maxLat),
-            minLng: Number(req.query.minLng),
-            maxLng: Number(req.query.maxLng),
-          },
-        }),
+        area: {
+          minLat: Number(req.query.minLat),
+          maxLat: Number(req.query.maxLat),
+          minLng: Number(req.query.minLng),
+          maxLng: Number(req.query.maxLng),
+        },
+      }),
     };
 
     const result = await this.parkingSpotsService.getParkingSpots(filters);
@@ -60,7 +60,7 @@ export class ParkingSpotsController {
     res.status(200).json(result);
   };
 
-    createParkingSpot = async (req: Request, res: Response): Promise<void> => {
+  createParkingSpot = async (req: Request, res: Response): Promise<void> => {
     // El servicio valida el cuerpo, porque el cliente puede mandar cualquier cosa
     const body = req.body as CreateParkingSpotRequestDTO;
 
@@ -86,7 +86,7 @@ export class ParkingSpotsController {
     res.status(200).json(result);
   };
 
-    updateParkingSpot = async (req: Request, res: Response): Promise<void> => {
+  updateParkingSpot = async (req: Request, res: Response): Promise<void> => {
     const id = Number(req.params.id);
     const body = req.body as UpdateParkingSpotRequestDTO;
 
@@ -95,7 +95,7 @@ export class ParkingSpotsController {
     res.status(200).json(result);
   };
 
-    addPhoto = async (req: Request, res: Response): Promise<void> => {
+  addPhoto = async (req: Request, res: Response): Promise<void> => {
     const id = Number(req.params.id);
 
     // req.file lo deja listo el middleware de subida

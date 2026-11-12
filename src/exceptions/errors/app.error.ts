@@ -60,7 +60,7 @@ export const AppErrors = {
     statusCode: 401,
   },
 
-    USER_NOT_FOUND: {
+  USER_NOT_FOUND: {
     code: "USER_NOT_FOUND",
     message: "Usuario no encontrado",
     statusCode: 404,
@@ -90,7 +90,7 @@ export const AppErrors = {
     statusCode: 403,
   },
 
-    UPLOAD_NO_FILE: {
+  UPLOAD_NO_FILE: {
     code: "UPLOAD_NO_FILE",
     message: "Debes adjuntar una imagen",
     statusCode: 400,
@@ -108,7 +108,7 @@ export const AppErrors = {
     statusCode: 413,
   },
 
-    PARKING_PHOTO_LIMIT: {
+  PARKING_PHOTO_LIMIT: {
     code: "PARKING_PHOTO_LIMIT",
     message: "Un parqueadero puede tener máximo 5 fotos",
     statusCode: 409,
@@ -227,7 +227,7 @@ export const AppErrors = {
     message: "Solo se pueden calificar reservas completadas",
     statusCode: 409,
   },
-  
+
   REVIEW_ALREADY_EXISTS: {
     code: "REVIEW_ALREADY_EXISTS",
     message: "Ya calificaste esta reserva",

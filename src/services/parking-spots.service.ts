@@ -1,9 +1,11 @@
 import { ParkingSpotChanges, ParkingSpotWithPhotos, PARKING_FEATURES, ParkingFeatures } from "../data/models/parking-spot.model";
 import { IImageStorage, UploadedFileData } from "./interfaces/image-storage.interface";
-import { CreateParkingSpotRequestDTO, ParkingSpotResponseDTO, UpdateAvailabilityRequestDTO, UpdateParkingSpotRequestDTO } from "../dto/parking-spots.dto";
+import { CreateParkingSpotRequestDTO, ParkingSpotDetailResponseDTO, ParkingSpotResponseDTO, UpdateAvailabilityRequestDTO, UpdateParkingSpotRequestDTO } from "../dto/parking-spots.dto";
 import { AppException } from "../exceptions/app.exception";
 import { AppErrors } from "../exceptions/errors/app.error";
 import { IParkingSpotsRepository } from "../repositories/interfaces/parking-spots.interface";
+import { IUsersRepository } from "../repositories/interfaces/users.interface";
+import { IReviewsRepository } from "../repositories/interfaces/reviews.interface";
 import {
   IParkingSpotsService,
   MapArea,
@@ -21,10 +23,12 @@ const EARTH_RADIUS_KM = 6371;
 const MAX_NEARBY = 50;
 
 export class ParkingSpotsService implements IParkingSpotsService {
-    constructor(
+  constructor(
     readonly parkingSpotsRepository: IParkingSpotsRepository,
     readonly imageStorage: IImageStorage,
-  ) {}
+    readonly usersRepository: IUsersRepository,
+    readonly reviewsRepository: IReviewsRepository,
+  ) { }
 
   async getParkingSpots(filters?: ParkingSpotsFilters): Promise<ParkingSpotResponseDTO[]> {
     // El valor llega del query string, así que se valida en tiempo de ejecución
@@ -40,7 +44,7 @@ export class ParkingSpotsService implements IParkingSpotsService {
       throw new AppException(error.code, error.message, error.statusCode);
     }
 
-      if (filters?.area && !this.isValidArea(filters.area)) {
+    if (filters?.area && !this.isValidArea(filters.area)) {
       const error = AppErrors.PARKING_INVALID_DATA;
 
       throw new AppException(
@@ -81,7 +85,7 @@ export class ParkingSpotsService implements IParkingSpotsService {
       .map((spot) => ({ ...spot, distanceKm: Math.round(spot.distanceKm * 100) / 100 }));
   }
 
-  async getParkingSpotById(id: number): Promise<ParkingSpotResponseDTO> {
+  async getParkingSpotById(id: number): Promise<ParkingSpotDetailResponseDTO> {
     // Si en la URL no llega un número entero positivo, id será NaN o inválido
     if (!Number.isInteger(id) || id <= 0) {
       const error = AppErrors.PARKING_INVALID_ID;
@@ -97,7 +101,24 @@ export class ParkingSpotsService implements IParkingSpotsService {
       throw new AppException(error.code, error.message, error.statusCode);
     }
 
-    return this.toResponseDTO(spot);
+    // Quién es el dueño: lo ve el conductor antes de reservar
+    const [owner, ownerRating] = await Promise.all([
+      this.usersRepository.getOwnerProfile(spot.ownerId),
+      this.reviewsRepository.getOwnerRatingSummary(spot.ownerId),
+    ]);
+
+    return {
+      ...this.toResponseDTO(spot),
+      owner: {
+        id: spot.ownerId,
+        name: owner?.name ?? "Propietario",
+        avatarUrl: owner?.avatarUrl ?? null,
+        rating: ownerRating.rating,
+        reviewCount: ownerRating.reviewCount,
+        parkingSpotCount: owner?.parkingSpotCount ?? 0,
+        memberSince: owner?.createdAt ?? null,
+      },
+    };
   }
 
   async createParkingSpot(data: CreateParkingSpotRequestDTO, ownerId: number): Promise<ParkingSpotResponseDTO> {
@@ -285,7 +306,7 @@ export class ParkingSpotsService implements IParkingSpotsService {
 
     problems.push(...this.validateFeatures(data));
 
-      if (data?.acceptsCars === false && data?.acceptsMotorcycles === false) {
+    if (data?.acceptsCars === false && data?.acceptsMotorcycles === false) {
       problems.push("el parqueadero debe aceptar carros, motos o ambos");
     }
 

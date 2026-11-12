@@ -10,3 +10,13 @@ export interface User {
   role: UserRole;
   avatarUrl?: string | null;
 }
+
+// Lo que se muestra del propietario en el detalle de un parqueadero
+export interface OwnerProfile {
+  id: number;
+  name: string;
+  avatarUrl: string | null;
+  createdAt: Date;
+  // Cuántos parqueaderos tiene publicados
+  parkingSpotCount: number;
+}

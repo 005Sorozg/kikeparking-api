@@ -56,7 +56,7 @@ export class ReviewsRepository implements IReviewsRepository {
       include: { author: { select: { name: true, avatarUrl: true } } },
     });
 
-     return reviews.map((review) => ({ ...review, target: review.target as ReviewTarget }));
+    return reviews.map((review) => ({ ...review, target: review.target as ReviewTarget }));
   }
 
   async getDriverRatingSummary(driverId: number): Promise<{ rating: number; reviewCount: number }> {

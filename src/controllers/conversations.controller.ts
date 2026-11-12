@@ -7,7 +7,7 @@ import {
 import { IConversationsService } from "../services/interfaces/conversations.interface";
 
 export class ConversationsController {
-  constructor(readonly conversationsService: IConversationsService) {}
+  constructor(readonly conversationsService: IConversationsService) { }
 
   startConversation = async (req: Request, res: Response): Promise<void> => {
     const body = req.body as StartConversationRequestDTO;

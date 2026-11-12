@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { IFavoritesService } from "../services/interfaces/favorites.interface";
 
 export class FavoritesController {
-  constructor(readonly favoritesService: IFavoritesService) {}
+  constructor(readonly favoritesService: IFavoritesService) { }
 
   getFavorites = async (req: Request, res: Response): Promise<void> => {
     const result = await this.favoritesService.getFavorites(req.user!.id);

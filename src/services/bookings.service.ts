@@ -28,7 +28,7 @@ export class BookingsService implements IBookingsService {
     readonly bookingsRepository: IBookingsRepository,
     readonly parkingSpotsRepository: IParkingSpotsRepository,
     readonly paymentGateway: IPaymentGateway,
-  ) {}
+  ) { }
 
   async createBooking(data: CreateBookingRequestDTO, driverId: number): Promise<BookingResponseDTO> {
     const problems = this.validateCreateData(data);
@@ -223,7 +223,7 @@ export class BookingsService implements IBookingsService {
 
     // Las reservas que ya terminaron no le sirven a quien va a reservar
     const slots = await this.bookingsRepository.getOccupiedSlots(parkingSpotId, new Date());
-    
+
     return slots.map((slot) => ({
       startAt: slot.startAt.toISOString(),
       endAt: slot.endAt.toISOString(),

@@ -3,7 +3,7 @@ import { CreateReviewRequestDTO } from "../dto/reviews.dto";
 import { IReviewsService } from "../services/interfaces/reviews.interface";
 
 export class ReviewsController {
-  constructor(readonly reviewsService: IReviewsService) {}
+  constructor(readonly reviewsService: IReviewsService) { }
 
   createReview = async (req: Request, res: Response): Promise<void> => {
     const body = req.body as CreateReviewRequestDTO;

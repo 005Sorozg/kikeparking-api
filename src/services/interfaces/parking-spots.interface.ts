@@ -1,4 +1,4 @@
-import {CreateParkingSpotRequestDTO, ParkingSpotResponseDTO, UpdateAvailabilityRequestDTO, UpdateParkingSpotRequestDTO} from "../../dto/parking-spots.dto";
+import { CreateParkingSpotRequestDTO, ParkingSpotDetailResponseDTO, ParkingSpotResponseDTO, UpdateAvailabilityRequestDTO, UpdateParkingSpotRequestDTO } from "../../dto/parking-spots.dto";
 import { UploadedFileData } from "./image-storage.interface";
 
 // Opciones de orden permitidas: rating (mayor primero) y price (menor primero)
@@ -30,7 +30,7 @@ export interface MapArea {
 export interface IParkingSpotsService {
   getParkingSpots(filters?: ParkingSpotsFilters): Promise<ParkingSpotResponseDTO[]>;
   getNearbyParkingSpots(lat: number, lng: number, limit: number): Promise<ParkingSpotResponseDTO[]>;
-  getParkingSpotById(id: number): Promise<ParkingSpotResponseDTO>;
+  getParkingSpotById(id: number): Promise<ParkingSpotDetailResponseDTO>;
   createParkingSpot(data: CreateParkingSpotRequestDTO, ownerId: number): Promise<ParkingSpotResponseDTO>;
   getMyParkingSpots(ownerId: number): Promise<ParkingSpotResponseDTO[]>;
   updateAvailability(id: number, data: UpdateAvailabilityRequestDTO, ownerId: number): Promise<ParkingSpotResponseDTO>;
