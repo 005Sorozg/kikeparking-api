@@ -1,4 +1,4 @@
-import { User } from "../data/models/user.model";
+import { User, OwnerProfile } from "../data/models/user.model";
 import { prisma } from "../config/prisma";
 import { IUsersRepository } from "./interfaces/users.interface";
 
@@ -17,28 +17,60 @@ export class UsersRepository implements IUsersRepository {
     return user as User;
   }
 
-    async getAllUsers(): Promise<User[]> {
+  async getAllUsers(): Promise<User[]> {
     const users = await prisma.user.findMany({ orderBy: { id: "asc" } });
 
     return users as User[];
   }
-    async updateAvatar(id: number, avatarUrl: string | null): Promise<User> {
+
+  async updateAvatar(id: number, avatarUrl: string | null): Promise<User> {
     const user = await prisma.user.update({ where: { id }, data: { avatarUrl } });
 
     return user as User;
   }
+
   async updateUser(id: number, data: Partial<Pick<User, "name" | "email">>): Promise<User> {
-  const user = await prisma.user.update({ where: { id }, data });
+    const user = await prisma.user.update({ where: { id }, data });
 
-  return user as User;
-}
-async getUserById(id: number): Promise<User | undefined> {
-  const user = await prisma.user.findUnique({ where: { id } });
+    return user as User;
+  }
 
-  return (user as User) ?? undefined;
-}
+  async getUserById(id: number): Promise<User | undefined> {
+    const user = await prisma.user.findUnique({ where: { id } });
 
-async updatePassword(id: number, passwordHash: string): Promise<void> {
-  await prisma.user.update({ where: { id }, data: { passwordHash } });
-}
+    return (user as User) ?? undefined;
+  }
+
+  async updatePassword(id: number, passwordHash: string): Promise<void> {
+    await prisma.user.update({ where: { id }, data: { passwordHash } });
+  }
+
+  async getOwnerProfile(id: number): Promise<OwnerProfile | undefined> {
+    const ownerProfile = await prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        avatarUrl: true,
+        createdAt: true,
+        parkingSpots: {
+          select: {
+            id: true
+          }
+        }
+      }
+    });
+
+    if (!ownerProfile) {
+      return undefined;
+    }
+
+    return {
+      id: ownerProfile.id,
+      name: ownerProfile.name,
+      avatarUrl: ownerProfile.avatarUrl,
+      createdAt: ownerProfile.createdAt,
+      parkingSpotCount: ownerProfile.parkingSpots.length
+    } as OwnerProfile;
+  }
 }

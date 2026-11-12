@@ -11,5 +11,5 @@ export interface IBookingsService {
   getReceivedBookings(ownerId: number, parkingSpotId?: number): Promise<BookingResponseDTO[]>;
   getOccupiedSlots(parkingSpotId: number): Promise<OccupiedSlotResponseDTO[]>;
   cancelBooking(id: number, userId: number): Promise<BookingResponseDTO>;
-    payBooking(id: number, data: PayBookingRequestDTO, driverId: number): Promise<BookingResponseDTO>;
+  payBooking(id: number, data: PayBookingRequestDTO, driverId: number): Promise<BookingResponseDTO>;
 }

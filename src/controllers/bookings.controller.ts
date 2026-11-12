@@ -3,7 +3,7 @@ import { CreateBookingRequestDTO, PayBookingRequestDTO } from "../dto/bookings.d
 import { IBookingsService } from "../services/interfaces/bookings.interface";
 
 export class BookingsController {
-  constructor(readonly bookingsService: IBookingsService) {}
+  constructor(readonly bookingsService: IBookingsService) { }
 
   createBooking = async (req: Request, res: Response): Promise<void> => {
     // El servicio valida el cuerpo, porque el cliente puede mandar cualquier cosa
@@ -22,7 +22,7 @@ export class BookingsController {
   };
 
   getReceivedBookings = async (req: Request, res: Response): Promise<void> => {
-  // ?parkingSpotId=3 es opcional: sin él llegan las reservas de todos sus parqueaderos
+    // ?parkingSpotId=3 es opcional: sin él llegan las reservas de todos sus parqueaderos
     const parkingSpotId =
       req.query.parkingSpotId !== undefined ? Number(req.query.parkingSpotId) : undefined;
 
@@ -32,7 +32,7 @@ export class BookingsController {
   };
 
   getOccupiedSlots = async (req: Request, res: Response): Promise<void> => {
-  // El id llega como texto desde el query string, así que se convierte a número
+    // El id llega como texto desde el query string, así que se convierte a número
     const parkingSpotId = Number(req.query.parkingSpotId);
 
     const result = await this.bookingsService.getOccupiedSlots(parkingSpotId);
@@ -43,7 +43,7 @@ export class BookingsController {
   cancelBooking = async (req: Request, res: Response): Promise<void> => {
     const id = Number(req.params.id);
 
-      const result = await this.bookingsService.cancelBooking(id, req.user!.id);
+    const result = await this.bookingsService.cancelBooking(id, req.user!.id);
 
     res.status(200).json(result);
   };

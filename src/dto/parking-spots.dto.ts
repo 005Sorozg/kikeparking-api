@@ -25,6 +25,25 @@ export interface ParkingSpotResponseDTO extends ParkingFeatures {
   photos: ParkingSpotPhotoDTO[];
 }
 
+// Dueño del parqueadero, como lo ve el conductor en el detalle
+export interface ParkingSpotOwnerDTO {
+  id: number;
+  name: string;
+  avatarUrl: string | null;
+  // Promedio de las reseñas de todos sus parqueaderos
+  rating: number;
+  reviewCount: number;
+  // Cuántos parqueaderos tiene publicados
+  parkingSpotCount: number;
+  // Desde cuándo usa KikeParking
+  memberSince: Date | null;
+}
+
+// GET /parking-spots/:id: el parqueadero con los datos de su dueño
+export interface ParkingSpotDetailResponseDTO extends ParkingSpotResponseDTO {
+  owner: ParkingSpotOwnerDTO;
+}
+
 // Las características son opcionales: si no se envían, acepta carros y motos y lo demás queda en false
 export interface CreateParkingSpotRequestDTO extends Partial<ParkingFeatures> {
   title: string;

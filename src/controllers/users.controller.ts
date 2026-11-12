@@ -3,7 +3,7 @@ import { ChangePasswordRequestDTO, LoginRequestDTO, RegisterUserRequestDTO, Upda
 import { IUsersService } from "../services/interfaces/users.interface";
 
 export class UsersController {
-  constructor(readonly usersService: IUsersService) {}
+  constructor(readonly usersService: IUsersService) { }
 
   register = async (req: Request, res: Response): Promise<void> => {
     // El servicio valida el cuerpo, porque el cliente puede mandar cualquier cosa
@@ -42,13 +42,13 @@ export class UsersController {
   };
 
   updateProfile = async (req: Request, res: Response): Promise<void> => {
-  // El id sale del token (req.user), nunca del cuerpo: así nadie edita a otro usuario
-  const body = req.body as UpdateUserRequestDTO;
+    // El id sale del token (req.user), nunca del cuerpo: así nadie edita a otro usuario
+    const body = req.body as UpdateUserRequestDTO;
 
-  const result = await this.usersService.updateProfile(req.user!.id, body);
+    const result = await this.usersService.updateProfile(req.user!.id, body);
 
-  res.status(200).json(result);
-};
+    res.status(200).json(result);
+  };
 
   changePassword = async (req: Request, res: Response): Promise<void> => {
     const body = req.body as ChangePasswordRequestDTO;

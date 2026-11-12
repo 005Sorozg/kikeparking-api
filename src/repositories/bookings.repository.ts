@@ -138,5 +138,5 @@ export class BookingsRepository implements IBookingsRepository {
       select: { startAt: true, endAt: true },
       orderBy: { startAt: "asc" },
     });
-  }  
+  }
 }
